@@ -1,9 +1,10 @@
+import { DashboardFrame } from "@/components/Dashboard/Frame";
 
 
 export default function DashboardPage() {
     return (
         <>
-            <h1>Hello</h1>
+            <DashboardFrame />
         </>
     )
 }
