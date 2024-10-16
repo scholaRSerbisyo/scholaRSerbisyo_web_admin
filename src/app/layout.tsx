@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import NavbarComponent from "@/components/Static/Navbar";
+import { cookies } from "next/headers";
+import Sidebar from "@/components/Static/Sidebar";
+import SidebarComponent from "@/components/Static/Sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,12 +27,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isAuth = cookies().get('isSign')?.value;
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+          {
+            !isAuth?
+            <>
+              <main>
+                {children}
+              </main>
+            </>
+            :
+            <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+              <SidebarComponent />
+              <div className="flex flex-col h-full">
+                <NavbarComponent />
+                  {children}
+              </div>
+            </div>
+          }
       </body>
     </html>
   );
