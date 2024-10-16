@@ -5,7 +5,7 @@ import { createSession, destroySession } from "./stateless";
 import { redirect } from "next/navigation";
 
 export async function signIn(data: any) {
-    const req: any = await fetch(`${API_URL}/api/user/login`, {
+    const req: any = await fetch(`${API_URL}/api/user/admin/login`, {
         method: 'POST',
         mode: 'cors',
         headers: {

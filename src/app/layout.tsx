@@ -3,8 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import NavbarComponent from "@/components/Static/Navbar";
 import { cookies } from "next/headers";
-import Sidebar from "@/components/Static/Sidebar";
 import SidebarComponent from "@/components/Static/Sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,8 +31,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-dark-background text-foreground antialiased`}
       >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           {
             !isAuth?
             <>
@@ -49,6 +55,7 @@ export default function RootLayout({
               </div>
             </div>
           }
+        </ThemeProvider>
       </body>
     </html>
   );
