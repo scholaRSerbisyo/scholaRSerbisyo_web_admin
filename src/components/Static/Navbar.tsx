@@ -34,11 +34,13 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { signOut } from "@/auth/auth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function NavbarComponent() {
     const router = usePathname();
 
     const isPageUsers = router === "/users";
+        
 
     return (
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -104,27 +106,18 @@ export default function NavbarComponent() {
                 </SheetContent>
             </Sheet>
             {
-                router === "/dashboard"?
+                router === "/dashboard" || router === "/profile"?
                 <div className="w-full flex-1"></div>
                 :
                 <div className="w-full flex-1">
                     <form>
                     <div className="relative">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        {
-                            !isPageUsers?
-                            <Input
-                                type="search"
-                                placeholder={`Search Profile...`}
-                                className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                            />
-                            :
-                            <Input
-                                type="search"
-                                placeholder={`Search Users...`}
-                                className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                            />
-                        }
+                        <Input
+                            type="search"
+                            placeholder={`Search ${router}...`}
+                            className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                        />
                     </div>
                     </form>
                 </div>
@@ -142,7 +135,7 @@ export default function NavbarComponent() {
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer"><div onClick={async () => await signOut()}>Logout</div></DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer"><div onClick={async () => { await signOut()}}>Logout</div></DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </header>

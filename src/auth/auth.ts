@@ -54,4 +54,6 @@ export async function signUp(data: any) {
 
 export async function signOut() {
     await destroySession();
+    const message = "Logged Out";
+    return {message};
 }

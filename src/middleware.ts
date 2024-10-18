@@ -19,7 +19,7 @@ export default async function middleware(req:NextRequest) {
     }*/
 
     if (req.nextUrl.pathname.startsWith('/dashboard') && !isSign) {
-        return NextResponse.redirect(new URL('/login', req.nextUrl));
+        return NextResponse.redirect(new URL('/', req.nextUrl));
     }
 
     if (req.nextUrl.pathname.startsWith('/login') && isSign) {

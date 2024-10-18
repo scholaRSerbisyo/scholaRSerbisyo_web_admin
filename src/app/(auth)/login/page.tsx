@@ -5,7 +5,7 @@ export default function LoginPage() {
     return (
         <>
             <div>
-                <div className="my-4">
+                <div className="min-h-screen">
                     <LoginForm />
                 </div>
             </div>

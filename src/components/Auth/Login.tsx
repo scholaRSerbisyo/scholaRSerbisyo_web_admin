@@ -25,7 +25,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Image from "next/image";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -56,64 +56,80 @@ export default function LoginForm() {
 
         const res = await signIn(data);
 
-        toast({
-            title:'Something went wrong',
-            description: res?.message,
-        })
+        if (res?.message == "account doesn't exist" || res?.message == "admins can only access this!") {
+            toast({
+                title:'Something went wrong',
+                description: res?.message,
+            })
+        } else {
+            toast({
+                title:'Success',
+                description: res?.message,
+            })
+        }
+        
     }
 
     return (
         <>
-            <div className="flex justify-center px-5 py-24">
-                <Toaster />
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
-                        <Card className="w-full max-w-sm">
-                        <CardHeader>
-                            <CardTitle className="text-2xl">Login</CardTitle>
-                            <CardDescription>
-                            Enter your email below to login to your account.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            {/* Email Form Field */}
-                            <FormField
-                            control={form.control}
-                            name='email'
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input className="rounded" placeholder="example@gmail.com" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            {/* Password Form Field */}
-                            <FormField
-                            control={form.control}
-                            name='password'
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <Input className="rounded" placeholder="********" type="password" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                        </CardContent>
-                        <CardFooter className="flex flex-col">
-                            <Button className="w-full" type="submit">Sign in</Button>
-                            <Link href={"/forgot"} className="flex flex-row" >
-                                <p className="font-bold">Forgot Password? </p>
-                            </Link>
-                        </CardFooter>
-                        </Card>
-                    </form>
-                </Form>
+            <nav className="flex justify-between w-full bg-white h-20 items-center px-24">
+                <Link href={'/'}>
+                    <Image src={'/logo.png'} width={108} height={108} alt=""/>
+                </Link>
+            </nav>
+            <div style={{backgroundImage: "url('/login_background.png')", backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center'}}>
+                <div className="flex justify-start pl-24 py-[11.2vh]">
+                    <Toaster />
+                    <Form {...form}>
+                        <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
+                            <Card className="w-full max-w-sm">
+                            <CardHeader>
+                                <CardTitle className="text-2xl">Login</CardTitle>
+                                <CardDescription>
+                                Enter your email below to login to your account.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid gap-4">
+                                {/* Email Form Field */}
+                                <FormField
+                                control={form.control}
+                                name='email'
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input className="rounded-xl bg-white text-black" placeholder="example@gmail.com" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                                {/* Password Form Field */}
+                                <FormField
+                                control={form.control}
+                                name='password'
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input className="rounded-xl bg-white text-black" placeholder="********" type="password" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                            </CardContent>
+                            <CardFooter className="flex flex-col gap-4">
+                                <Button className="w-full bg-ys text-black hover:bg-yellow-200 font-semibold" type="submit">Sign in</Button>
+                                <Link href={"/forgot"} className="flex flex-row hover:underline hover:underline-offset-4" >
+                                    <p>Forgot Password? </p>
+                                </Link>
+                                <Link href={'/'} className="font-semibold text-red-500 px-6 rounded-md hover:border-x-2 hover:border-red-500">Go Back</Link>
+                            </CardFooter>
+                            </Card>
+                        </form>
+                    </Form>
+                </div>
             </div>
         </>
     )

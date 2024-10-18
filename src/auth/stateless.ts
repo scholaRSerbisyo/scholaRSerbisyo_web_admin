@@ -91,6 +91,6 @@ export async function destroySession() {
         cookies().delete('isSign');
         cookies().delete('scholar');
         cookies().delete('admin');
-        redirect('/login');
+        redirect('/');
     }
 }

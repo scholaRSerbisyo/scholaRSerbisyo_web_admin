@@ -9,7 +9,7 @@ import {
   Package,
   Package2,
   Search,
-  ShoppingCart,
+  Bookmark,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,11 +41,11 @@ export default function SidebarComponent() {
                             Dashboard
                         </Link>
                         <Link
-                            href="/users"
-                            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${router === '/users' ? 'bg-muted text-primary' : ''}`}
+                            href="/events"
+                            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${router === '/events' ? 'bg-muted text-primary' : ''}`}
                         >
-                            <ShoppingCart className="h-4 w-4" />
-                            Users
+                            <Bookmark className="h-4 w-4" />
+                            Events
                             {/*<Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
                             6
                             </Badge>*/}
@@ -58,11 +58,11 @@ export default function SidebarComponent() {
                             Profile
                         </Link>
                         <Link
-                            href="#"
-                            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${router === '/' ? 'bg-muted text-primary' : ''}`}
+                            href="/users"
+                            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${router === '/users' ? 'bg-muted text-primary' : ''}`}
                         >
                             <Users className="h-4 w-4" />
-                            Customers
+                            Users
                         </Link>
                         <Link
                             href="#"
