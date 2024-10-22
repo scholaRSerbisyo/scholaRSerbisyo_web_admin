@@ -18,7 +18,7 @@ export default function LandingPage() {
             <div className="flex w-full min-h-[87.5vh] items-center pl-24">
                 <div className="flex flex-col w-[80vh] gap-4">
                     <h1 className="text-ys text-[40px] font-bold">"No scholar left behind."</h1>
-                    <p className="text-[18px] font-bold">Welcome to IskoIntellect!<br/>Stay informed and engaged with our Event and Return Service Monitoring System</p>
+                    <p className="text-[18px] font-bold">Welcome to scholaRSerbisyo!<br/>Stay informed and engaged with our Event and Return Service Monitoring System</p>
                     <Link href={'/login'} className="bg-ys text-white hover:bg-yellow-200 hover:text-black text-[18px] w-44 font-bold py-3 text-center rounded-3xl">Get Started</Link>
                 </div>
             </div>
