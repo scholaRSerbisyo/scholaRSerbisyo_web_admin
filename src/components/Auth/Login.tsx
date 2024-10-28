@@ -6,13 +6,11 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { buttonVariants } from "@/components/ui/button";
 import { signIn } from "@/auth/auth";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -55,6 +53,7 @@ export default function LoginForm() {
         }
 
         const res = await signIn(data);
+        console.log(data)
 
         if (res?.message == "account doesn't exist" || res?.message == "admins can only access this!") {
             toast({

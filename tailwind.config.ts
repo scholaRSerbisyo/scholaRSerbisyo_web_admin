@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		backgroundImage: {
+			landingbg: "url('/landing_background.png')",
+		},
   		colors: {
   			ys: '#FDB316',
   			background: 'hsl(var(--background))',

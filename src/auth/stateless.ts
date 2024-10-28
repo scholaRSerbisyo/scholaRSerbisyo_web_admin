@@ -11,7 +11,6 @@ export async function createSession(token: string, role: string) {
             secure: true,
             sameSite: 'lax',
             path: '/',
-            maxAge: 300
         }
     )
     cookies().set("isSign", "true",
@@ -20,7 +19,6 @@ export async function createSession(token: string, role: string) {
             secure: true,
             sameSite: 'lax',
             path: '/',
-            maxAge: 300
         }
     )
 
@@ -31,7 +29,6 @@ export async function createSession(token: string, role: string) {
                 secure: false,
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 300
             }
         )
     }
@@ -43,7 +40,6 @@ export async function createSession(token: string, role: string) {
                 secure: false,
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 300
             }
         )
     }

@@ -3,17 +3,11 @@ import Link from "next/link";
 
 export default function LandingPage() {
     return (
-        <div className="min-h-screen w-full" style={{backgroundImage: "url('/landing_background.png')", backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+        <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat bg-landingbg">
             <nav className="flex justify-between w-full bg-white h-20 items-center px-24">
                 <Link href={'/'}>
                     <Image src={'/logo.png'} width={108} height={108} alt=""/>
                 </Link>
-                <div className="flex text-black gap-12 items-center font-semibold">
-                    <Link href={'/'} className="hover:underline-offset-4 hover:underline">Home</Link>
-                    <Link href={'/'} className="hover:underline-offset-4 hover:underline">About</Link>
-                    <Link href={'/'} className="hover:underline-offset-4 hover:underline">Contact Us</Link>
-                    <Link href={'/login'} className="bg-ys text-white hover:border hover:border-black hover:bg-yellow-200 hover:text-black w-28 font-bold py-2 text-center rounded-3xl">Login</Link>
-                </div>
             </nav>
             <div className="flex w-full min-h-[87.5vh] items-center pl-24">
                 <div className="flex flex-col w-[80vh] gap-4">

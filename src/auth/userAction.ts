@@ -1,14 +1,8 @@
 "use server";
 
-import { verifySession } from "./stateless";
-import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
 
 export const isAdmin = (async () => {
-    const session = await verifySession();
-
-    const token: any = cookies().get('session')?.value;
-
     try {
         const req: any = await fetch(`${API_URL}/api/user/me`, {
             method: 'GET',
@@ -35,9 +29,3 @@ export const isAdmin = (async () => {
         return null
     }
 })
-
-export const updateUser = (
-    async (data: any) => {
-        
-    }
-)

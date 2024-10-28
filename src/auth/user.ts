@@ -3,12 +3,10 @@
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
 import { cache } from "react";
-import { verifySession } from "@/auth/stateless";
 
 const token: any = cookies().get('session')?.value
 
 export const getUser = cache(async () => {
-    const session = await verifySession();
     
     try {
         const req: any = await fetch(`${API_URL}/api/user/me`, {

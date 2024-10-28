@@ -9,8 +9,6 @@ export default async function SideProfileFrame({
     children: React.ReactNode;
   }>) {
     const user = await getUser();
-
-    console.log(user)
     return (
         <>
             <SidebarComponent children={children} email={user.email} />
