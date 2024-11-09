@@ -18,7 +18,10 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "scholaRSerbisyo",
-  description: "Event Management for Scholars"
+  description: "Event Management for Scholars",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

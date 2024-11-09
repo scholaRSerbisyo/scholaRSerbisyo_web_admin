@@ -1,10 +1,10 @@
-import FullEventCalendar from "@/components/Features/MultiSelectCalendar"
+import BaranggayComponent from "@/components/Events/Baranggay";
 
 
 export default function BaranggayPage() {
     return (
         <>
-            <FullEventCalendar />
+            <BaranggayComponent />
         </>
     )
 }

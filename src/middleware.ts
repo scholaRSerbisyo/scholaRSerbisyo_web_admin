@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const publicRoutes = ['/'];
-const protectedRoutes = ['/dashboard', '/baranggay', '/school'];
+const protectedRoutes = ['/dashboard', '/events/baranggay', '/events/school', '/events/cso', '/users'];
 const userControllerRoutes = ['/login', '/register'];
 
 export default async function middleware(req:NextRequest) {
@@ -14,19 +14,11 @@ export default async function middleware(req:NextRequest) {
     const isSign = cookies().get('isSign')?.value;
 
     if (isUserCreateRoutes && isSign) {
-        return NextResponse.redirect(new URL('/login', req.nextUrl));
+        return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
     }
 
     if (isProtectedRoutes && !isSign) {
         return NextResponse.redirect(new URL('/', req.nextUrl));
-    }
-
-    if (req.nextUrl.pathname.startsWith('/dashboard') && !isSign) {
-        return NextResponse.redirect(new URL('/', req.nextUrl));
-    }
-
-    if (req.nextUrl.pathname.startsWith('/login') && isSign) {
-        return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
     }
 
     if (isPublicRoute && isSign) {

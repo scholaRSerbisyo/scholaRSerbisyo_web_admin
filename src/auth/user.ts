@@ -2,38 +2,57 @@
 
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
-import { cache } from "react";
 
-const token: any = cookies().get('session')?.value
+const token = cookies().get("session")?.value;
 
-export const getUser = cache(async () => {
-    
+type User = {
+    user_id: number;
+    email: string;
+    email_verified_at: string | undefined;
+    role_id: number;
+    admin: {
+        admin_id: number;
+        admin_name: string;
+    };
+};
+
+export const getUser = async (): Promise<User> => {
+    if (!token) {
+        throw new Error("Unauthenticated: No session token found");
+    }
+
     try {
-        const req: any = await fetch(`${API_URL}/api/user/me`, {
+        const req = await fetch(`${API_URL}/api/user/me`, {
+            cache: 'no-store',
             method: "GET",
-            headers: {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+            headers: {
                 "Authorization": `Bearer ${token}`,
                 "Accept": "application/json"
             }
-        })
+        });
 
-        const res = await req.json()
+        const res = await req.json();
 
-
-        if(!req.ok) {
-            const message = res?.message
-
-            return { message }
+        if (!req.ok) {
+            throw new Error(res?.message || 'Failed to fetch user data');
         }
-        else {
-            const data = res
-            
-            return data
+
+        // Validate response structure
+        if (
+            !res ||
+            typeof res.user_id !== 'number' ||
+            typeof res.email !== 'string' ||
+            typeof res.role_id !== 'number' ||
+            !res.admin ||
+            typeof res.admin.admin_id !== 'number' ||
+            typeof res.admin.admin_name !== 'string'
+        ) {
+            throw new Error("Invalid user data format");
         }
+
+        return res as User;
     } catch (error) {
-        console.log(error)
-
-        return null
+        console.error("Error fetching user:", error);
+        throw error; // Ensures the calling component can handle this error
     }
-}
-)
+};

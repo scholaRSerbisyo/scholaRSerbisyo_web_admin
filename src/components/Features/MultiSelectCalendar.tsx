@@ -91,11 +91,11 @@ export default function FullEventCalendar() {
   const getCategoryBgColor = (category: "previous" | "today" | "upcoming") => {
     switch (category) {
       case "previous":
-        return "bg-yellow-500 text-black hover:bg-yellow-600 rounded-full w-6 h-6 mt-2 mx-2";
+        return "bg-red-500 text-black hover:bg-red-600 rounded-full w-6 h-6 mt-2 mx-2";
       case "today":
-        return "bg-green-500 text-black hover:bg-green-600 rounded-full w-6 h-6 mt-2 mx-2";
-      case "upcoming":
         return "bg-blue-500 text-black hover:bg-blue-600 rounded-full w-6 h-6 mt-2 mx-2";
+      case "upcoming":
+        return "bg-green-500 text-black hover:bg-green-600 rounded-full w-6 h-6 mt-2 mx-2";
     }
   };
 
@@ -139,7 +139,7 @@ export default function FullEventCalendar() {
                           className={cn(
                             "flex items-center justify-center h-10 w-10 font-normal rounded-full",
                             eventDay ? getCategoryBgColor(eventDay.category) : "text-foreground",
-                            "hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                            "hover:bg-white hover:text-primary-foreground focus:bg-yellow-300 focus:text-primary-foreground",
                             className,
                             dayIndex % 7 === 0 ? "ml-auto" : "",
                             dayIndex % 7 === 6 ? "mr-auto" : ""
@@ -169,21 +169,21 @@ export default function FullEventCalendar() {
             <div className="flex gap-8">
               <Badge
                 className={cn(
-                  "text-primary-foreground font-normal bg-yellow-500 hover:bg-yellow-600",
+                  "text-primary-foreground font-normal bg-red-500 hover:bg-yellow-600",
                 )}
               >
                 Previous
               </Badge>
               <Badge
                 className={cn(
-                  "text-primary-foreground font-normal bg-green-500 hover:bg-green-600",
+                  "text-primary-foreground font-normal bg-blue-500 hover:bg-green-600",
                 )}
               >
                 Today
               </Badge>
               <Badge
                 className={cn(
-                  "text-primary-foreground font-normal bg-blue-500 hover:bg-blue-600",
+                  "text-primary-foreground font-normal bg-green-500 hover:bg-blue-600",
                 )}
               >
                 Upcoming

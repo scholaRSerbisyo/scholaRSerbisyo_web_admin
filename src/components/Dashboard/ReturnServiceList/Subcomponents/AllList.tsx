@@ -34,7 +34,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const data: Payment[] = [
   {
@@ -44,7 +43,8 @@ const data: Payment[] = [
     yearlevel: "ken99@yahoo.com",
     school: "yooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 2,
+    status: 'complete'
   },
   {
     id: "3u1reuv4",
@@ -53,7 +53,8 @@ const data: Payment[] = [
     yearlevel: "Abe45@gmail.com",
     school: "gfgyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 2,
+    status: 'incomplete'
   },
   {
     id: "derv1ws0",
@@ -62,7 +63,8 @@ const data: Payment[] = [
     yearlevel: "Monserrat44@gmail.com",
     school: "asdyasdooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 2,
+    status: 'complete'
   },
   {
     id: "5kma53ae",
@@ -71,7 +73,8 @@ const data: Payment[] = [
     yearlevel: "Silas22@gmail.com",
     school: "ddyoasdoo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 5,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -80,7 +83,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 4,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -89,7 +93,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 1,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -98,7 +103,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 4,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -107,7 +113,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 6,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -116,7 +123,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 77,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -125,7 +133,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 21,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -134,7 +143,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 12,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -143,7 +153,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 53,
+    status: 'complete'
   },
   {
     id: "bhqecj4p",
@@ -152,7 +163,8 @@ const data: Payment[] = [
     yearlevel: "carmella@hotmail.com",
     school: "qweyooo",
     baranggay: "lapasan",
-    RSNumber: 2
+    RSNumber: 43,
+    status: 'complete'
   },
 ];
 
@@ -163,7 +175,8 @@ export type Payment = {
   yearlevel: string,
   school: string,
   baranggay: string,
-  RSNumber: Number
+  RSNumber: Number,
+  status: string
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -244,15 +257,45 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: "RSNumber",
-        header: () => <div className="text-right">No. of Return Service</div>,
+        accessorFn: (row) => row?.RSNumber?.toString(),
+        filterFn: (row, columnId, filterValue) => {
+            console.log(row.getValue(columnId), filterValue);
+            return row.getValue(columnId) === parseInt(filterValue);
+        },
+        header: ({ column }) => {
+            return (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                <div className="text-right">No. of Return Service</div>,
+                <ArrowUpDown className="ml-2" />
+            </Button>
+            )
+        }, 
         cell: ({ row }) => {
             const RSNumber = parseFloat(row.getValue("RSNumber"))
         
             // Format the RSNumber as a dollar RSNumber
             const formatted = new Intl.NumberFormat().format(RSNumber)
         
-            return <div className="text-right font-medium">{formatted}</div>
+            return <div className="text-center font-medium">{formatted}</div>
         },
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }) => {
+            return (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Status
+                <ArrowUpDown className="ml-2" />
+            </Button>
+            )
+        },
+        cell: ({ row }) => row.getValue("status") == 'complete'?<div className="lowercase bg-green-500 text-black text-center border">{row.getValue("status")}</div>:<div className="lowercase bg-red-500 text-black text-center border">{row.getValue("status")}</div>,
     },
     {
         id: "actions",
@@ -307,20 +350,19 @@ export function AllListSubComponent() {
         },
         initialState: {
             pagination: {
-                pageSize: 5, // Set initial page size to 5
+                pageSize: 6, // Set initial page size to 6
             },
         },
     });
   
     return (
-        <div className="flex flex-col gap-6 max-w-auto overflow-x-auto">
+        <div className="flex flex-col gap-6 max-w-full">
             <div className="flex items-center">
-
                 <Input
                     placeholder="Filter year level..."
                     value={(table.getColumn("yearlevel")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                    table.getColumn("yearlevel")?.setFilterValue(event.target.value)
+                        table.getColumn("yearlevel")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
@@ -335,20 +377,22 @@ export function AllListSubComponent() {
                             .getAllColumns()
                             .filter((column) => column.getCanHide())
                             .map((column) => (
-                            <DropdownMenuCheckboxItem
-                                key={column.id}
-                                className="capitalize"
-                                checked={column.getIsVisible()}
-                                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                            >
-                                {column.id}
-                            </DropdownMenuCheckboxItem>
-                        ))}
+                                <DropdownMenuCheckboxItem
+                                    key={column.id}
+                                    className="capitalize"
+                                    checked={column.getIsVisible()}
+                                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                                >
+                                    {column.id}
+                                </DropdownMenuCheckboxItem>
+                            ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="rounded-md border mx-2">
-                <Table>
+
+            {/* Wrapper for responsive scrolling */}
+            <div className="rounded-md border flex flex-col gap-6 w-full overflow-x-auto">
+                <Table className="w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
@@ -383,10 +427,11 @@ export function AllListSubComponent() {
                     </TableBody>
                 </Table>
             </div>
+
             <div>
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
             </div>
+
             <div className="flex items-center justify-end space-x-2">
                 <Button
                     variant="outline"

@@ -55,9 +55,11 @@ import { signOut } from "@/auth/auth";
 export default function SidebarComponent({
   children,
   email,
+  name,
 }: Readonly<{
   children: React.ReactNode;
   email: string;
+  name: string;
 }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -69,7 +71,7 @@ export default function SidebarComponent({
     navMain,
   } = {
     user: {
-      name: "Admin",
+      name,
       email,
       avatar: "./logo.png",
     },
@@ -225,7 +227,7 @@ export default function SidebarComponent({
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem><BadgeCheck />Account</DropdownMenuItem>
+                    <Link href="/account" className="flex items-center w-full hover:bg-muted rounded-sm p-2 hover:ease-in-out"><BadgeCheck />Account</Link>
                     <DropdownMenuItem><CreditCard />Billing</DropdownMenuItem>
                     <DropdownMenuItem><Bell />Notifications</DropdownMenuItem>
                   </DropdownMenuGroup>

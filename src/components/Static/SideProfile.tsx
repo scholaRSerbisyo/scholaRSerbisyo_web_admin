@@ -11,7 +11,7 @@ export default async function SideProfileFrame({
     const user = await getUser();
     return (
         <>
-            <SidebarComponent children={children} email={user.email} />
+            <SidebarComponent children={children} email={user.email} name={user.admin.admin_name} />
         </>
     )
 }

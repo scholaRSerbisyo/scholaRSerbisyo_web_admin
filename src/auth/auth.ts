@@ -17,15 +17,18 @@ export async function signIn(data: any) {
 
     const res = await req.json();
 
+    const dt = {
+        message: res.message,
+        status: req.status
+    };
+
     if (!req.ok) {
-        const message = res.message;
-        return {message};
+        console.log(dt)
+        return {dt};
     }
     else
     {
-        const token = res.token;
-        const role = res.role;
-        await createSession(token, role);
+        await createSession(res.token, res.role,);
     }
 }
 

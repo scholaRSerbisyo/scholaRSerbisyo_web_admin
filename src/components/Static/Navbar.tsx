@@ -52,7 +52,7 @@ export default function NavbarComponent({
     return (
         <SidebarInset>
             <header
-                className={`sticky top-0 flex items-center gap-2 bg-background shadow-sm transition-[height] duration-300 ease-linear shrink-0 z-10
+                className={`sticky top-0 flex items-center gap-2 bg-background shadow-sm transition-[height] duration-200 ease-linear shrink-0 z-10
                     ${isSidebarCollapsed ? "h-12" : "h-16"}
                 `}
             >

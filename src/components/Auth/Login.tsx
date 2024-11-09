@@ -1,4 +1,6 @@
 "use client";
+
+import * as React from 'react';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,6 +27,8 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
+import { EyeIcon } from 'lucide-react';
+import { PasswordInput } from '../ui/password-input';
 
 const formSchema = z.object({
     email: z.string().min(2).max(50).email({
@@ -53,17 +57,18 @@ export default function LoginForm() {
         }
 
         const res = await signIn(data);
-        console.log(data)
 
-        if (res?.message == "account doesn't exist" || res?.message == "admins can only access this!") {
+        console.log(res)
+
+        if (res?.dt.status == 404 || res?.dt.status == 400 || res?.dt.status == 401) {
             toast({
                 title:'Something went wrong',
-                description: res?.message,
+                description: res?.dt.message,
             })
         } else {
             toast({
                 title:'Success',
-                description: res?.message,
+                description: res?.dt.message,
             })
         }
         
@@ -111,7 +116,8 @@ export default function LoginForm() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input className="rounded-xl bg-white text-black" placeholder="********" type="password" {...field} />
+                                            {/* <Input className="rounded-xl bg-white text-black" placeholder="********" type="password" {...field} /> */}
+                                            <PasswordInput placeholder='***********' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
