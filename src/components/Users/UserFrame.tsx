@@ -40,7 +40,7 @@ export type Payment = {
   id: string
   lastname: string
   firstname: string
-  email: string,
+  yearlevel: string,
   school: string,
   baranggay: string,
   status: string
@@ -48,9 +48,19 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
     {
-        accessorKey: "id", // Use "id" as the accessor key
-        header: "ID", // Simple header for the ID column
-        cell: ({ row }) => <div>{row.getValue("id")}</div>, // Directly display the ID value
+        accessorKey: "id",
+        header: ({ column }) => {
+            return (
+                <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                ID
+                <ArrowUpDown className="ml-2" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div className="lowercase">{row.getValue("id")}</div>, // Directly display the ID value
     },
     {
         accessorKey: "lastname",
@@ -83,19 +93,19 @@ export const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => <div className="lowercase">{row.getValue("firstname")}</div>,
     },
     {
-        accessorKey: "email",
+        accessorKey: "yearlevel",
         header: ({ column }) => {
             return (
             <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-                Email
+                Year Level
                 <ArrowUpDown className="ml-2" />
             </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("yearlevel")}</div>,
     },
     {
         accessorKey: "school",
@@ -217,7 +227,7 @@ export function UserFrameComponent() {
                         id: scholar.scholar_id,
                         lastname: scholar.lastname,
                         firstname: scholar.firstname,
-                        email: scholar.user.email,
+                        yearlevel: scholar.user.email,
                         school: scholar.school.school_name,
                         baranggay: scholar.baranggay.baranggay_name,
                         status: 'complete'
@@ -261,10 +271,10 @@ export function UserFrameComponent() {
         <div className="flex flex-col gap-6 max-w-full">
             <div className="flex items-center">
                 <Input
-                    placeholder="Filter email..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+                    placeholder="Filter Lastname..."
+                    value={(table.getColumn("lastname")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("email")?.setFilterValue(event.target.value)
+                        table.getColumn("lastname")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />

@@ -1,58 +1,40 @@
-"server only";
+import 'server-only';
+import { cache } from 'react';
+import { verifySession } from './stateless';
+import API_URL from '@/constants/constants';
 
-import { cookies } from "next/headers";
-import API_URL from "@/constants/constants";
+import { cookies } from 'next/headers';
 
-const token = cookies().get("session")?.value;
+export const getUser = cache(async () => {
+    const session = await verifySession()
 
-type User = {
-    user_id: number;
-    email: string;
-    email_verified_at: string | undefined;
-    role_id: number;
-    admin: {
-        admin_id: number;
-        admin_name: string;
-    };
-};
-
-export const getUser = async (): Promise<User> => {
-    if (!token) {
-        throw new Error("Unauthenticated: No session token found");
-    }
+    const token: any = cookies().get('session')?.value
 
     try {
-        const req = await fetch(`${API_URL}/api/user/me`, {
-            cache: 'no-store',
+        const req: any = await fetch(`${API_URL}/api/user/me`, {
             method: "GET",
-            headers: {
+            headers: {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                 "Authorization": `Bearer ${token}`,
                 "Accept": "application/json"
             }
-        });
+        })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+        const res = await req.json()
 
-        const res = await req.json();
 
-        if (!req.ok) {
-            throw new Error(res?.message || 'Failed to fetch user data');
+        if(!req.ok) {
+            const message = res?.message
+
+            return { message }
+        }
+        else {
+            const data = res
+            
+            return data
         }
 
-        // Validate response structure
-        if (
-            !res ||
-            typeof res.user_id !== 'number' ||
-            typeof res.email !== 'string' ||
-            typeof res.role_id !== 'number' ||
-            !res.admin ||
-            typeof res.admin.admin_id !== 'number' ||
-            typeof res.admin.admin_name !== 'string'
-        ) {
-            throw new Error("Invalid user data format");
-        }
-
-        return res as User;
     } catch (error) {
-        console.error("Error fetching user:", error);
-        throw error; // Ensures the calling component can handle this error
+        console.log('error')
+        return null
     }
-};
+})

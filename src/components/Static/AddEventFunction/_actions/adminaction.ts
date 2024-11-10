@@ -21,6 +21,8 @@ export const getAdmins = async () => {
 
         const res = await req.json()
 
+        console.log(res)
+
         if(!req.ok) {
             const message = res?.message
 

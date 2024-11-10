@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import Image from "next/image";
 import {
   BadgeCheck,
@@ -8,6 +9,7 @@ import {
   BookOpen,
   Bot,
   ChevronRight,
+  ChevronDown,
   ChevronsUpDown,
   CreditCard,
   LayoutDashboardIcon,
@@ -64,7 +66,6 @@ export default function SidebarComponent({
   const pathname = usePathname();
   const router = useRouter();
 
-  // Sample data structure for user, teams, and nav items
   const {
     user,
     teams,
@@ -112,10 +113,13 @@ export default function SidebarComponent({
   // Determine if the path is active
   const isActive = (path: string) => pathname.startsWith(path);
 
-  // Logout and redirect to login page
+  // Toggle state for "Events" collapsible
+  const [isEventsOpen, setIsEventsOpen] = useState(false);
+
+  const toggleEvents = () => setIsEventsOpen((prev) => !prev);
+  
   const onLogout = async () => {
     await signOut();
-    router.push("/login"); // Adjust the route as needed
   };
 
   return (
@@ -138,6 +142,7 @@ export default function SidebarComponent({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
+        
         <SidebarContent>
           <SidebarGroup>
             <SidebarMenu>
@@ -146,16 +151,18 @@ export default function SidebarComponent({
                   {item.items ? (
                     <Collapsible
                       asChild
-                      defaultOpen={item.items.some((subItem) =>
-                        isActive(subItem.path)
-                      )}
+                      open={isEventsOpen}
                     >
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
+                        <CollapsibleTrigger asChild onClick={toggleEvents}>
                           <SidebarMenuButton tooltip={item.title}>
                             {item.icon && <item.icon />}
                             <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 rotate-0 group-data-[state=open]:rotate-90" />
+                            {isEventsOpen ? (
+                              <ChevronDown className="ml-auto transition-transform duration-200" />
+                            ) : (
+                              <ChevronRight className="ml-auto transition-transform duration-200" />
+                            )}
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
@@ -191,6 +198,7 @@ export default function SidebarComponent({
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
+
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>

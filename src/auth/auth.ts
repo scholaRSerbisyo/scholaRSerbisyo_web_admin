@@ -28,7 +28,7 @@ export async function signIn(data: any) {
     }
     else
     {
-        await createSession(res.token, res.role,);
+        await createSession(res.token, res.role);
     }
 }
 
@@ -56,7 +56,9 @@ export async function signUp(data: any) {
 }
 
 export async function signOut() {
-    await destroySession();
-    const message = "Logged Out";
-    return {message};
+    const result = await destroySession();
+    const message = result === "No active session" || result === "Logout failed" || result === "Logout request failed"
+        ? "Logout encountered an issue"
+        : "Logged Out";
+    return { message };
 }

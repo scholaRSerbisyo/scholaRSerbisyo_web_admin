@@ -1,8 +1,8 @@
 import 'server-only';
-
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import API_URL from '@/constants/constants';
+
 
 export async function createSession(token: string, role: string) {
     cookies().set("session", token,
@@ -11,7 +11,6 @@ export async function createSession(token: string, role: string) {
             secure: true,
             sameSite: 'lax',
             path: '/',
-            maxAge: 300
         }
     )
     cookies().set("isSign", "true",
@@ -19,82 +18,84 @@ export async function createSession(token: string, role: string) {
             httpOnly: true,
             secure: true,
             sameSite: 'lax',
-            path: '/',
-            maxAge: 300
+            path: '/'
         }
     )
 
-    if (role == "2") {
-        cookies().set("scholar", "true",
+    if(role == "2") {
+        cookies().set("participant", "true",
             {
                 httpOnly: false,
                 secure: false,
                 sameSite: 'lax',
-                path: '/',
-                maxAge: 300
+                path: '/'
             }
-        )
+        ) 
     }
-
-    if (role == "1") {
+    
+    if(role == "1") {
         cookies().set("admin", "true",
             {
                 httpOnly: false,
                 secure: false,
                 sameSite: 'lax',
-                path: '/',
-                maxAge: 300
+                path: '/'
             }
-        )
+        ) 
     }
 
     redirect('/dashboard')
 }
 
-export async function verifySession() {
-    const session = cookies().get('session')?.value;
 
+
+export async function verifySession() {
+    const session = cookies().get('session')?.value
+    
     const req: any = await fetch(`${API_URL}/api/user/me`, {
-        method: 'GET',
-        mode: 'cors',
+        method: "GET",
+        mode: "cors",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session}`
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session}`
         }
     })
 
     try {
-        if (!req.ok) {
-            redirect('login');
-        }
+        if(!req.ok) {
+            redirect('/login')
+        }  
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
+
 }
 
+
 export async function destroySession() {
-    const session = cookies().get('session')?.value;
+    const session = cookies().get('session')?.value
 
     const res: any = await fetch(`${API_URL}/api/user/logout`, {
-        method: 'POST',
-        mode: 'cors',
+        method: "POST",
+        mode: "cors",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session}`,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session}`
         }
     })
-
+    
+    
     if (!res.ok) {
         return await res.json().message
     }
-    else
-    {
-        cookies().delete('session');
-        cookies().delete('isSign');
-        cookies().delete('scholar');
-        cookies().delete('admin');
-        redirect('/');
+    else {
+        cookies().delete('session')
+        cookies().delete('isSign')
+        cookies().delete('participant')
+        cookies().delete('admin')
+        redirect('/login')
     }
+
 }
