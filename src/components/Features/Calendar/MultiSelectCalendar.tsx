@@ -13,7 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 // Define the EventDay type
 type EventDay = {
@@ -139,7 +139,7 @@ export default function FullEventCalendar() {
                           className={cn(
                             "flex items-center justify-center h-10 w-10 font-normal rounded-full",
                             eventDay ? getCategoryBgColor(eventDay.category) : "text-foreground",
-                            "hover:bg-white hover:text-primary-foreground focus:bg-yellow-300 focus:text-primary-foreground",
+                            "hover:bg-yellow-300 hover:text-black focus:bg-yellow-300 focus:text-primary-foreground",
                             className,
                             dayIndex % 7 === 0 ? "ml-auto" : "",
                             dayIndex % 7 === 6 ? "mr-auto" : ""

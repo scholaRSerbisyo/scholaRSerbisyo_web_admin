@@ -17,6 +17,10 @@ import {
   LogOut,
   Settings2,
   Sparkles,
+  UserCheck,
+  User,
+  UserRoundCheck,
+  Calendar,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,15 +58,17 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/auth/auth";
 
+interface SidebarComponentProps {
+  children: React.ReactNode;
+  email: string;
+  name: string;
+}
+
 export default function SidebarComponent({
   children,
   email,
   name,
-}: Readonly<{
-  children: React.ReactNode;
-  email: string;
-  name: string;
-}>) {
+}: SidebarComponentProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -79,32 +85,26 @@ export default function SidebarComponent({
     teams: {
       name: "scholaRSerbisyo",
       logo: GalleryVerticalEnd,
-      plan: "Scholar Administration",
+      plan: "Administration",
     },
     navMain: [
       {
         title: "Dashboard",
-        url: "/dashboard",
         icon: LayoutDashboardIcon,
         path: "/dashboard",
       },
       {
         title: "Events",
-        icon: Bot,
+        icon: Calendar,
         items: [
-          { title: "Baranggay", path: "/events/baranggay" },
+          { title: "Community", path: "/events/community" },
           { title: "School", path: "/events/school" },
           { title: "CSO", path: "/events/cso" },
         ],
       },
       {
-        title: "Scholar's List",
-        icon: BookOpen,
-        path: "/users",
-      },
-      {
         title: "Return Services Status",
-        icon: Settings2,
+        icon: UserRoundCheck,
         path: "/rsstatus",
       },
     ],
@@ -129,8 +129,8 @@ export default function SidebarComponent({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Image src={"/logo.png"} width={108} height={108} alt="" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gray-300 text-sidebar-primary-foreground">
+                  <Image src={"/logo_transparent.png"} width={108} height={108} alt="" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
@@ -156,7 +156,7 @@ export default function SidebarComponent({
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild onClick={toggleEvents}>
                           <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
+                            {item.icon && <item.icon fill={isActive(item.path!) ? "white" : "black"} />}
                             <span>{item.title}</span>
                             {isEventsOpen ? (
                               <ChevronDown className="ml-auto transition-transform duration-200" />
@@ -170,9 +170,8 @@ export default function SidebarComponent({
                             {item.items.map((subItem) => (
                               <SidebarMenuSubItem
                                 key={subItem.title}
-                                className={isActive(subItem.path) ? "bg-muted text-primary" : ""}
                               >
-                                <SidebarMenuSubButton asChild>
+                                <SidebarMenuSubButton className={isActive(subItem.path) ? "bg-[#191851] rounded-lg text-white hover:bg-[#191851] hover:text-white" : ""} asChild>
                                   <Link href={subItem.path}>
                                     <span className="pl-4">{subItem.title}</span>
                                   </Link>
@@ -185,9 +184,9 @@ export default function SidebarComponent({
                     </Collapsible>
                   ) : (
                     <Link href={item.path}>
-                      <SidebarMenuItem className={isActive(item.path) ? "bg-muted text-primary" : ""}>
-                        <SidebarMenuButton tooltip={item.title}>
-                          {item.icon && <item.icon />}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton tooltip={item.title} className={isActive(item.path) ? "bg-[#191851] rounded-lg text-white hover:bg-[#191851] hover:text-white" : ""}>
+                          {item.icon && <item.icon fill={isActive(item.path!) ? "white" : "black"} />}
                           <span>{item.title}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -207,7 +206,7 @@ export default function SidebarComponent({
                   <SidebarMenuButton size="lg">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarFallback className="rounded-lg"><User /></AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">{user.name}</span>

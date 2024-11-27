@@ -11,10 +11,10 @@ export function RSScholarListTabsComponent() {
     return (
         <Tabs defaultValue="all" className="w-full max-w-[40rem] mx-auto py-2">
             <TabsList className="mb-2">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="complete">Complete</TabsTrigger>
-                <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
-                <TabsTrigger value="inactive">Inactive</TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:bg-ys">All</TabsTrigger>
+                <TabsTrigger value="complete" className="data-[state=active]:bg-ys">Complete</TabsTrigger>
+                <TabsTrigger value="incomplete" className="data-[state=active]:bg-ys">Incomplete</TabsTrigger>
+                <TabsTrigger value="inactive" className="data-[state=active]:bg-ys">Inactive</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
                 <AllListSubComponent />

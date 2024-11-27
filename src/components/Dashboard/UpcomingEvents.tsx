@@ -1,6 +1,4 @@
-import { BellRing, Check } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import { CalendarDays, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,20 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Separator } from "../ui/separator";
 
 const notifications = [
     {
-        title: "Your call has been confirmed.",
-        description: "1 hour ago",
+        title: "Scholar's Cup",
+        description: "December 12, 2024 - CSO",
     },
     {
-        title: "You have a new message!",
-        description: "1 hour ago",
+        title: "Mitumaw",
+        description: "January 5, 2024 - Community",
     },
     {
-        title: "Your subscription is expiring soon!",
-        description: "2 hours ago",
+        title: "Panaghiusa",
+        description: "January 20, 2024 - School",
     },
 ]
 
@@ -32,19 +30,11 @@ type CardProps = React.ComponentProps<typeof Card>
 export function UpcomingEventsComponents({ className, ...props }: CardProps) {
   return (
     <Card className="w-full max-w-auto sm:w-auto mx-auto">
-        <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
-            <CardDescription>You have 3 unread messages.</CardDescription>
+        <CardHeader className="rounded-t-lg bg-ys">
+            <CardTitle className="flex justify-between pr-20 text-black items-center"><CalendarDays color="black" />Upcoming Events</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4">
-            <div className="flex items-center space-x-4 rounded-md border p-4">
-                <BellRing />
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">Push Notifications</p>
-                    <p className="text-sm text-muted-foreground">Send notifications to device.</p>
-                </div>
-                <Switch />
-            </div>
+        <Separator />
+        <CardContent className="grid gap-4 py-5">
             <div>
                 {notifications.map((notification, index) => (
                     <div key={index} className="mb-4 grid grid-cols-[25px_1fr] items-start pb-4 last:mb-0 last:pb-0">
@@ -58,8 +48,8 @@ export function UpcomingEventsComponents({ className, ...props }: CardProps) {
             </div>
         </CardContent>
         <CardFooter>
-            <Button className="w-full">
-                <Check /> Mark all as read
+            <Button className="w-full bg-ys text-black hover:bg-yellow-300">
+                View All
             </Button>
         </CardFooter>
     </Card>

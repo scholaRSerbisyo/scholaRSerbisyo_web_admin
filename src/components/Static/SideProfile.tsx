@@ -1,6 +1,8 @@
 
 import { getUser } from "@/auth/user";
 import SidebarComponent from "./Sidebar";
+import { fetchedUser } from "./_actions/useractions";
+import { User } from "../types/usertype";
 
 
 export default async function SideProfileFrame({
@@ -8,7 +10,7 @@ export default async function SideProfileFrame({
   }: Readonly<{
     children: React.ReactNode;
   }>) {
-    const user = await getUser();
+    const user: User = await fetchedUser();
     return (
         <>
             <SidebarComponent children={children} email={user.email} name={user.admin.admin_name} />

@@ -23,7 +23,7 @@ export async function createSession(token: string, role: string) {
     )
 
     if(role == "2") {
-        cookies().set("participant", "true",
+        cookies().set("scholar", "true",
             {
                 httpOnly: false,
                 secure: false,
@@ -43,6 +43,8 @@ export async function createSession(token: string, role: string) {
             }
         ) 
     }
+
+    console.log('hello')
 
     redirect('/dashboard')
 }

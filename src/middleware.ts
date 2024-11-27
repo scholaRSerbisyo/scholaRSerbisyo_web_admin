@@ -7,7 +7,7 @@ const userControllerRoutes = ['/login', '/register'];
 
 export default async function middleware(req:NextRequest) {
     const path = req.nextUrl.pathname;
-    const isPublicRoute = publicRoutes.includes(path);
+    const isPublicRoutes = publicRoutes.includes(path);
     const isUserCreateRoutes = userControllerRoutes.includes(path);
     const isProtectedRoutes = protectedRoutes.includes(path);
 
@@ -21,7 +21,7 @@ export default async function middleware(req:NextRequest) {
         return NextResponse.redirect(new URL('/', req.nextUrl));
     }
 
-    if (isPublicRoute && isSign) {
+    if (isPublicRoutes && isSign) {
         return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
     }
 

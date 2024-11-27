@@ -11,7 +11,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
     const [showPassword, setShowPassword] = React.useState(false);
 
     return (
-        <div className="relative w-full">
+        <div className="relative w-full bg-white rounded-md text-black">
             <Input
                 type={showPassword ? "text" : "password"} // toggle between text and password
                 className={className}

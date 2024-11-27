@@ -23,7 +23,6 @@ export async function signIn(data: any) {
     };
 
     if (!req.ok) {
-        console.log(dt)
         return {dt};
     }
     else

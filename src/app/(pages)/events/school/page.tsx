@@ -1,10 +1,12 @@
-import SchoolComponent from "@/components/Events/School";
+import SchoolComponent from "@/components/Events/School/School";
+import { fetchSchools } from "@/components/fetchingactions/_fetch";
+import { School } from "@/components/types";
 
-
-export default function SchoolPage() {
+export default async function SchoolPage() {
+    const schools: School[] = await fetchSchools();
     return (
         <>
-            <SchoolComponent />
+            <SchoolComponent schools={schools} />
         </>
     )
 }

@@ -6,83 +6,50 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Clipboard, UserCheck, UserX } from "lucide-react";
 
 export default function AnalyticsComponent() {
     return (
-        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-3 sm:px-5 py-5 border rounded-sm">
-            <Card className="flex-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-3 sm:px-5 py-3 border rounded-sm">
+            <Card className="flex-1 bg-green-400">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3">
                     <CardTitle className="text-sm font-medium">
-                        Total Revenue
+
                     </CardTitle>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                    >
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                    </svg>
+                    <UserCheck color="green" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">$45,231.89</div>
-                    <p className="text-xs text-muted-foreground">
-                        +20.1% from last month
+                <CardContent className="text-black">
+                    <div className="text-2xl font-bold text-center">1,143</div>
+                    <p className="text-xs text-center">
+                        Complete Return Service
                     </p>
                 </CardContent>
             </Card>
-            <Card className="flex-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <Card className="flex-1 bg-red-400">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3">
                     <CardTitle className="text-sm font-medium">
-                        Subscriptions
+                        
                     </CardTitle>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                    >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
+                    <Clipboard color="red" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">+2350</div>
-                    <p className="text-xs text-muted-foreground">
-                        +180.1% from last month
+                <CardContent className="text-black">
+                    <div className="text-2xl font-bold text-center">120</div>
+                    <p className="text-xs text-center">
+                        Incomplete
                     </p>
                 </CardContent>
             </Card>
-            <Card className="flex-1">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                    >
-                        <rect width="20" height="14" x="2" y="5" rx="2" />
-                        <path d="M2 10h20" />
-                    </svg>
+            <Card className="flex-1 bg-purple-400">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3">
+                    <CardTitle className="text-sm font-medium">
+
+                    </CardTitle>
+                    <UserX color="purple" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">+12,234</div>
-                    <p className="text-xs text-muted-foreground">
-                        +19% from last month
+                <CardContent className="text-black">
+                    <div className="text-2xl font-bold text-center">84</div>
+                    <p className="text-xs text-center">
+                        Inactive
                     </p>
                 </CardContent>
             </Card>

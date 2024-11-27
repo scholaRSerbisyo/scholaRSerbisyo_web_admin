@@ -27,7 +27,6 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { EyeIcon } from 'lucide-react';
 import { PasswordInput } from '../ui/password-input';
 
 const formSchema = z.object({
@@ -58,9 +57,7 @@ export default function LoginForm() {
 
         const res = await signIn(data);
 
-        console.log(res)
-
-        if (res?.dt.status == 404 || res?.dt.status == 400 || res?.dt.status == 401) {
+        if (res?.dt.status == 404 || res?.dt.status == 400 || res?.dt.status == 401 || res?.dt.status == 401) {
             toast({
                 title:'Something went wrong',
                 description: res?.dt.message,
@@ -86,14 +83,14 @@ export default function LoginForm() {
                     <Toaster />
                     <Form {...form}>
                         <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
-                            <Card className="w-full max-w-sm">
+                            <Card className="w-full max-w-sm bg-black">
                             <CardHeader>
-                                <CardTitle className="text-2xl">Login</CardTitle>
+                                <CardTitle className="text-2xl text-white">Login</CardTitle>
                                 <CardDescription>
                                 Enter your email below to login to your account.
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="grid gap-4">
+                            <CardContent className="grid gap-4  text-white">
                                 {/* Email Form Field */}
                                 <FormField
                                 control={form.control}
@@ -126,7 +123,7 @@ export default function LoginForm() {
                             </CardContent>
                             <CardFooter className="flex flex-col gap-4">
                                 <Button className="w-full bg-ys text-black hover:bg-yellow-200 font-semibold" type="submit">Sign in</Button>
-                                <Link href={"/forgot"} className="flex flex-row hover:underline hover:underline-offset-4" >
+                                <Link href={"/forgot"} className="flex flex-row hover:underline hover:underline-offset-4 text-ys" >
                                     <p>Forgot Password? </p>
                                 </Link>
                                 <Link href={'/'} className="font-semibold text-red-500 px-6 rounded-md hover:border-x-2 hover:border-red-500">Go Back</Link>

@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { ModeButton } from "./dark-mode";
 
 export default function NavbarComponent({
     children,
@@ -52,7 +53,7 @@ export default function NavbarComponent({
     return (
         <SidebarInset>
             <header
-                className={`sticky top-0 flex items-center gap-2 bg-background shadow-sm transition-[height] duration-200 ease-linear shrink-0 z-10
+                className={`sticky top-0 flex items-center gap-2 bg-background justify-between shadow-sm transition-[height] duration-200 ease-linear shrink-0 z-10 pr-5
                     ${isSidebarCollapsed ? "h-12" : "h-16"}
                 `}
             >
@@ -67,6 +68,7 @@ export default function NavbarComponent({
                         </Breadcrumb>
                     )}
                 </div>
+                <ModeButton />
             </header>
             <div className="flex flex-1 flex-col mt-2 gap-4 p-4 pt-0">
                 {children}

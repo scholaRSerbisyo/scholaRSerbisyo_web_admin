@@ -393,11 +393,11 @@ export function AllListSubComponent() {
             {/* Wrapper for responsive scrolling */}
             <div className="rounded-md border flex flex-col gap-6 w-full overflow-x-auto">
                 <Table className="w-full">
-                    <TableHeader>
+                    <TableHeader className="bg-gray-300">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead className="text-black" key={header.id}>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(header.column.columnDef.header, header.getContext())}
