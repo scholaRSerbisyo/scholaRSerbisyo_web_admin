@@ -1,12 +1,13 @@
 import SchoolComponent from "@/components/Events/School/School";
 import { fetchSchools } from "@/components/fetchingactions/_fetch";
-import { School } from "@/components/types";
+import { fetchedUser } from "@/components/Static/_actions/useractions";
 
 export default async function SchoolPage() {
-    const schools: School[] = await fetchSchools();
+    const schools = await fetchSchools();
+    const type = await fetchedUser()
     return (
         <>
-            <SchoolComponent schools={schools} />
+            <SchoolComponent schools={schools} admintype={type.admin.admin_type_id} />
         </>
-    )
+    );
 }

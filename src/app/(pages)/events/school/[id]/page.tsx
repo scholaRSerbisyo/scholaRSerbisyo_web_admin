@@ -1,11 +1,42 @@
-import { getSchool } from "@/components/Events/_actions/schools"
-import SchoolEvents from "@/components/Events/School/SubComponents/SchoolEvents"
-import { School } from "@/components/types"
-import { notFound } from "next/navigation"
+import { getSchool } from "@/components/Events/_actions/schools";
+import { cookies } from "next/headers"; // To fetch the token
+import { School, School2 } from "@/components/types";
+import SchoolEvent from "@/components/Events/School/SubComponents/SchoolEvent";
+import { fetchedUser } from "@/components/Static/_actions/useractions";
 
-export default async function SchoolPage({ params }: { params: { id: string } }) {
-  const school: any = await getSchool(params.id);
-
-  return <SchoolEvents school={school} />;
+interface SchoolPageProps {
+  params: { id: string };
+  admintype: number
 }
 
+export default async function SchoolPage({ params, admintype }: SchoolPageProps) {
+  const { id } = params;
+
+  try {
+    // Fetch the school details with the token
+    const school: School2 = await getSchool(id);
+    const admintype = await fetchedUser();
+
+    if (!school) {
+      return (
+        <div>
+          <h1>School Not Found</h1>
+          <p>No school found with ID: {id}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <SchoolEvent type={school.school.school_name} events={school.events} admintype={admintype.admin.admin_type_id}/>
+      </div>
+    );
+  } catch (error: any) {
+    return (
+      <div>
+        <h1>Error Loading School</h1>
+        <p>{error.message || "An unexpected error occurred."}</p>
+      </div>
+    );
+  }
+}

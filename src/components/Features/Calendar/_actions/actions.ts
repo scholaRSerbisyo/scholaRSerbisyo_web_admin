@@ -1,34 +1,91 @@
-"use server";
+"use server"
 
-import { cookies } from "next/headers";
-import API_URL from "@/constants/constants";
+import { cookies } from "next/headers"
+import API_URL from "@/constants/constants"
 
 const token = cookies().get("session")?.value
 
-export async function getEventsForCalendar() {
-    try {
-        const req: any = await fetch(`${API_URL}/api/events/getevents`, {
-            cache: 'no-store',
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        })
+export type School = {
+  school_id: number;
+  school_name: string;
+  created_at: string;
+  updated_at: string;
+}
 
-        const res = await req.json()
+export type Barangay = {
+  baranggay_id: number;
+  baranggay_name: string;
+  created_at: string;
+  updated_at: string;
+}
 
-        if(!req.ok) {
-            const message = res?.message
-            return {message}
-        }
-        else
-        {
-            return res
-        }
-    } catch (error) {
-        const message = error
-        return {message}
+export type EventResponse = {
+  event_id: number;
+  event_name: string;
+  description: string;
+  date: string;
+  time_from: string;
+  time_to: string;
+  location: string;
+  status: 'ongoing' | 'upcoming' | 'previous';
+  event_type_id: number;
+  school_id?: number;
+  baranggay_id?: number;
+  admin_id: number;
+  event_image_uuid?: string;
+  created_at: string;
+  updated_at: string;
+  event_type?: {
+    event_type_id: number;
+    name: string;
+    description: string;
+  };
+  school?: School;
+  barangay?: Barangay;
+}
+
+export const getEvents = async () => {
+  try {
+    const req = await fetch(`${API_URL}/api/events/getevents`, {
+      cache: 'no-store',
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+    })
+
+    const res = await req.json()
+
+    if (!req.ok) {
+      const message = res?.message
+      return { message }
     }
+
+    const currentDate = new Date();
+    const formattedCurrentDate = currentDate.toISOString().split('T')[0];
+    const currentTime = currentDate.toTimeString().split(' ')[0].slice(0, 5);
+
+    const eventsWithStatus = (res as EventResponse[]).map(event => {
+      if (event.date < formattedCurrentDate) {
+        event.status = 'previous';
+      } else if (event.date === formattedCurrentDate) {
+        if (currentTime >= event.time_from && currentTime <= event.time_to) {
+          event.status = 'ongoing';
+        } else if (currentTime > event.time_to) {
+          event.status = 'upcoming';
+        } else {
+          event.status = 'previous';
+        }
+      } else {
+        event.status = 'upcoming';
+      }
+      return event;
+    });
+
+    return eventsWithStatus;
+  } catch (error) {
+    return { message: error }
+  }
 }

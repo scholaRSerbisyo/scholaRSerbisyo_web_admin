@@ -4,7 +4,7 @@ import * as React from "react"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Baranggay, School } from "@/components/types"
+import { Baranggay } from "@/components/types"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,9 +34,10 @@ export const dynamic = "force-dynamic"
 ]*/}
 interface BarangayProps {
   barangays: Baranggay[]
+  admintype: number
 }
 
-export default function CommunityComponent({barangays}: BarangayProps) {
+export default function CommunityComponent({barangays, admintype}: BarangayProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = React.useState("")
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -71,7 +72,7 @@ export default function CommunityComponent({barangays}: BarangayProps) {
             List of barangays in Cagayan De Oro City
           </p>
         </div>
-        <AddEventButtonComponent />
+        <AddEventButtonComponent admintype={admintype} />
       </div>
       
       <div className="relative mb-6">
@@ -101,7 +102,7 @@ export default function CommunityComponent({barangays}: BarangayProps) {
                 >
                   <TableCell>
                     <Link 
-                      href={`/events/school/${barangay.baranggay_id}`}
+                      href={`/events/community/${barangay.baranggay_id}`}
                       className="block w-full h-full"
                     >
                       {barangay.baranggay_name}
@@ -109,7 +110,7 @@ export default function CommunityComponent({barangays}: BarangayProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     <Link 
-                      href={`/events/school/${barangay.baranggay_id}`}
+                      href={`/events/community/${barangay.baranggay_id}`}
                       className="block w-full h-full"
                     >
                       {barangay.events_count}

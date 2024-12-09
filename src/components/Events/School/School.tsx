@@ -34,9 +34,10 @@ export const dynamic = "force-dynamic"
 ]*/}
 interface SchoolProps {
   schools: School[]
+  admintype: number
 }
 
-export default function SchoolComponent({schools}: SchoolProps) {
+export default function SchoolComponent({schools, admintype}: SchoolProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = React.useState("")
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -71,7 +72,7 @@ export default function SchoolComponent({schools}: SchoolProps) {
             List of schools in Cagayan De Oro City
           </p>
         </div>
-        <AddEventButtonComponent />
+        <AddEventButtonComponent admintype={admintype} />
       </div>
       
       <div className="relative mb-6">

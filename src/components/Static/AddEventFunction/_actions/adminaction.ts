@@ -92,15 +92,10 @@ export const addEvent = async (data: any) => {
         })
 
         const res = await req.json()
-
-        console.log(res)
-        const dt = {
-            message: res.message,
-            status: req.status
-        };
+        const dt = [res.message, req.status];
 
         if (!req.ok) {
-            return {dt};
+            return dt;
         }
         else
         {

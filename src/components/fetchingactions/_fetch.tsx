@@ -1,8 +1,8 @@
 "use server"
 
-import { getBarangays } from "../Events/_actions/barangays";
+import { getBaranggays } from "../Events/_actions/barangays";
 import { getCSOEvents, getImage } from "../Events/_actions/events";
-import { getSchool, getSchools } from "../Events/_actions/schools";
+import { getSchools } from "../Events/_actions/schools";
 import { Baranggay, Event, School } from "../types";
 
 export async function fetchEvents(): Promise<Event[]> {
@@ -26,23 +26,39 @@ export async function fetchEvents(): Promise<Event[]> {
   }
 }
 
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+
 export async function fetchSchools(): Promise<School[]> {
-  try {
-    const fetchedschools = await getSchools();
-    return fetchedschools;
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
-  }
+    try {
+        const fetchedSchools = await getSchools();
+        if (Array.isArray(fetchedSchools)) {
+            return fetchedSchools;
+        } else {
+            console.error("Error fetching schools:", fetchedSchools.message);
+            return [];
+        }
+    } catch (error) {
+        console.error("Error in fetchSchools:", error);
+        return [];
+    }
 }
 
-export async function fetchBarangays(): Promise<Baranggay[]> {
+
+export async function fetchBarangays(cookies: ReadonlyRequestCookies): Promise<Baranggay[]> {
   try {
-    const fetchedbarangays = await getBarangays();
-    return fetchedbarangays;
+      const token = cookies.get("session")?.value;
+      if (!token) throw new Error("Authentication token not found");
+
+      const fetchedBaranggays = await getBaranggays(token);
+      if (Array.isArray(fetchedBaranggays)) {
+          return fetchedBaranggays;
+      } else {
+          console.error("Error fetching schools:", fetchedBaranggays.message);
+          return [];
+      }
   } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
+      console.error("Error in fetchSchools:", error);
+      return [];
   }
 }
 

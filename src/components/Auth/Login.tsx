@@ -72,25 +72,80 @@ export default function LoginForm() {
     }
 
     return (
-        <>
-            <nav className="flex justify-between w-full bg-white h-20 items-center px-24">
-                <Link href={'/'}>
-                    <Image src={'/logo.png'} width={108} height={108} alt=""/>
-                </Link>
-            </nav>
-            <div style={{backgroundImage: "url('/login_background.png')", backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center'}}>
-                <div className="flex justify-start pl-24 py-[11.2vh]">
+        <div className="min-h-screen relative overflow-hidden bg-white">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+            <Image
+            src="/landing_background.png"
+            alt="Graduates celebrating"
+            fill
+            className="object-cover"
+            priority
+            />
+        </div>
+
+        {/* Top Right Diagonal */}
+        <div 
+            className="absolute top-0 right-0 w-full h-full z-10"
+            style={{
+            clipPath: 'polygon(100% 0, 35% 0, 100% 62%)',
+            backgroundColor: '#f5a524'
+            }}
+        />
+        <div 
+            className="absolute top-0 right-0 w-full h-full z-20"
+            style={{
+                clipPath: 'polygon(100% 0, 46% 0, 100% 60%)',
+            backgroundColor: 'white'
+            }}
+        />
+        <div 
+            className="absolute top-0 right-0 w-full h-full z-20"
+            style={{
+                clipPath: 'polygon(100% 0, 56% 0, 100% 66%)',
+            backgroundColor: '#1a1f4d'
+            }}
+        />
+
+        {/* Bottom Right Diagonal */}
+        <div 
+            className="absolute bottom-0 right-0 w-full h-full z-10"
+            style={{
+            clipPath: 'polygon(100% 100%, 36% 100%, 100% 33%)',
+            backgroundColor: '#f5a524'
+            }}
+        />
+        <div 
+            className="absolute bottom-0 right-0 w-full h-full z-20"
+            style={{
+                clipPath: 'polygon(100% 100%, 47% 100%, 100% 35%)',
+            backgroundColor: 'white'
+            }}
+        />
+        <div 
+            className="absolute bottom-0 right-0 w-full h-full z-20"
+            style={{
+                clipPath: 'polygon(100% 100%, 57% 100%, 100% 27%)',
+            backgroundColor: '#1a1f4d'
+            }}
+        />
+
+        {/* Content */}
+        <div className="relative z-30 container mx-auto px-32 py-12 min-h-screen flex items-center">
+            <div className="grid lg:grid-cols-2 gap-80 items-center">
+            {/* Left Content */}
+                <div className="flex justify-start">
                     <Toaster />
                     <Form {...form}>
-                        <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
-                            <Card className="w-full max-w-sm bg-black">
+                        <form className="" onSubmit={form.handleSubmit(onSubmit)}>
+                            <Card className="max-w-5xl bg-black bg-opacity-50 border-none">
                             <CardHeader>
                                 <CardTitle className="text-2xl text-white">Login</CardTitle>
                                 <CardDescription>
                                 Enter your email below to login to your account.
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="grid gap-4  text-white">
+                            <CardContent className="grid gap-4 text-white">
                                 {/* Email Form Field */}
                                 <FormField
                                 control={form.control}
@@ -132,7 +187,26 @@ export default function LoginForm() {
                         </form>
                     </Form>
                 </div>
+            {/* Right Content - Logo */}
+            <div className="flex justify-end items-center">
+                <div className="relative">
+                {/* Navy blue ring */}
+                <div className="absolute inset-0 bg-[#f5a524] rounded-full scale-[1.08] border border-[#f5a524]" />
+                    {/* White background */}
+                    <div className="relative bg-white rounded-full p-8 w-60 h-60 flex items-center justify-center">
+                        <Image
+                            src="/logo_transparent.png"
+                            alt="Graduates celebrating"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </div>
+                </div>
             </div>
-        </>
-    )
+
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -2,10 +2,10 @@
 
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
+import { Event, UpdateEventPayload } from "./types";
 
-const token = cookies().get("session")?.value
-
-export const getCSOEvents = async () => { 
+export const getCSOEvents = async () => {
+  const token = cookies().get("session")?.value 
     try {
         const req: any = await fetch(`${API_URL}/api/events/getcsoevents`, {
             cache: 'no-store',
@@ -34,6 +34,7 @@ export const getCSOEvents = async () => {
 }
 
 export async function getImage(imageUuid: string) {
+  const token = cookies().get("session")?.value
     try {
         const response = await fetch(`${API_URL}/api/events/getimage`, {
             cache: 'no-store',
@@ -65,23 +66,89 @@ export async function getImage(imageUuid: string) {
 }
 
 export async function updateEvent(event: Event): Promise<Event> {
+  const token = cookies().get("session")?.value
     try {
-      const response = await fetch(`${API_URL}/api/events/updateevent`, {
+      const response = await fetch(`${API_URL}/api/events/updateevent/${event.event_id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
         },
         body: JSON.stringify(event),
       });
   
-        if (!response.ok) {
-            throw new Error('Failed to update event');
-        }
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData)
+        throw new Error(errorData.message || 'Failed to update event');
+      }
   
-        return await response.json();
+      const updatedEvent = await response.json();
+      return updatedEvent.event;
     } catch (error) {
       console.error('Error updating event:', error);
       throw error;
+    }
+  }
+  
+
+  export async function fetchCompletedSubmissions(eventId: number, page: number) {
+    const token = cookies().get('session')?.value
+    const response = await fetch(`${API_URL}/api/events/${eventId}/completed-submissions?page=${page}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      },
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    return await response.json()
+  }
+
+  export async function acceptSubmission(submissionId: number) {
+    const token = cookies().get('session')?.value
+    try {
+      const response = await fetch(`${API_URL}/api/events/submissions/${submissionId}/accept`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to accept submission')
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error accepting submission:', error)
+      throw error
+    }
+  }
+  
+  export async function declineSubmission(submissionId: number) {
+    const token = cookies().get('session')?.value
+    try {
+      const response = await fetch(`${API_URL}/api/events/submissions/${submissionId}/decline`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to decline submission')
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error declining submission:', error)
+      throw error
     }
   }

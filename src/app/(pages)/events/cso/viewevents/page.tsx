@@ -1,5 +1,5 @@
 import { fetchEvents } from "@/components/fetchingactions/_fetch";
-import ViewAllEvents from "@/components/Events/CSO/SubComponents/ViewAllEvents";
+// import ViewAllEvents from "@/components/Events/CSO/SubComponents/ViewAllEvents";
 import { Event } from "@/components/types";
 
 export default async function ViewEventsPage() {
@@ -7,7 +7,7 @@ export default async function ViewEventsPage() {
 
     return (
         <>
-            <ViewAllEvents events={event}/>
+            {/*<ViewAllEvents events={event}/>*/}
         </>
     )
 }

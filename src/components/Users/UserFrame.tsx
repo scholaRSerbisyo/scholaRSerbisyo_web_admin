@@ -35,61 +35,53 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { exportData } from "@/lib/utils/export"
+import { toast } from "@/hooks/use-toast"
+import { ScholarProfileDialog } from "./scholar-profile-dialog"
 
 export interface User {
-  // Add User interface properties here
+  id: number;
+  email: string;
+  email_verified_at: string | null;
+  role_id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 export interface School {
-  school_name: string
-  // Add other School interface properties here
+  id: number;
+  name: string;
 }
 
-export interface Baranggay {
-  baranggay_name: string
-  // Add other Baranggay interface properties here
+export interface Barangay {
+  id: number;
+  name: string;
+}
+
+export interface ScholarType {
+  id: number;
+  name: string;
 }
 
 export interface Scholar {
-  scholar_id: number
-  firstname: string
-  lastname: string
-  age: number
-  address: string
-  mobilenumber: string
-  yearlevel: string
-  scholar_type_id: number
-  user_id: number
-  school_id: number
-  baranggay_id: number
-  created_at: string
-  updated_at: string
-  user: User
-  school: School
-  baranggay: Baranggay
+  id: number;
+  firstname: string;
+  lastname: string;
+  mobilenumber: string;
+  age: number;
+  yearLevel: string;
+  scholarType: ScholarType;
+  school: School;
+  barangay: Barangay;
+  returnServiceCount: number;
 }
 
-interface ScholarWithStatus extends Scholar {
-  status: "Complete" | "Incomplete" | "Inactive"
+export interface ScholarProps {
+  scholars: Scholar[];
 }
 
-interface ScholarProps {
-  scholars: Scholar[]
-}
-
-const columns: ColumnDef<ScholarWithStatus>[] = [
-  {
-    accessorKey: "scholar_id",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        ID
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
+const columns: ColumnDef<Scholar>[] = [
   {
     accessorKey: "lastname",
     header: ({ column }) => (
@@ -115,19 +107,7 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
     ),
   },
   {
-    accessorKey: "age",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Age
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "yearlevel",
+    accessorKey: "yearLevel",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -139,7 +119,7 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
     ),
   },
   {
-    accessorKey: "school.school_name",
+    accessorKey: "school.name",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -151,7 +131,7 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
     ),
   },
   {
-    accessorKey: "baranggay.baranggay_name",
+    accessorKey: "barangay.name",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -163,7 +143,27 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "returnServiceCount",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Return Services
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const count = row.getValue("returnServiceCount") as number
+      return (
+        <div className="text-center">
+          {count} / 5
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "returnServiceStatus",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -174,13 +174,13 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as "Complete" | "Incomplete" | "Inactive"
+      const count = row.getValue("returnServiceCount") as number
+      const status = count >= 5 ? "Complete" : "Incomplete"
       return (
         <div
           className={`text-center px-2 py-1 rounded-full text-xs font-medium ${
             status === "Complete" ? "bg-green-100 text-green-800" : 
-            status === "Incomplete" ? "bg-red-100 text-red-800" : 
-            "bg-gray-100 text-gray-800"
+            "bg-red-100 text-red-800"
           }`}
         >
           {status}
@@ -192,31 +192,39 @@ const columns: ColumnDef<ScholarWithStatus>[] = [
     id: "actions",
     cell: ({ row }) => {
       const scholar = row.original
+      const [isProfileOpen, setIsProfileOpen] = React.useState(false)
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(scholar.scholar_id.toString())}>
-              Copy scholar ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View scholar details</DropdownMenuItem>
-            <DropdownMenuItem>Edit scholar information</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
+                View Scholar Details
+              </DropdownMenuItem>
+              <DropdownMenuItem>View Events Attended</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <ScholarProfileDialog 
+            scholar={scholar}
+            open={isProfileOpen}
+            onClose={() => setIsProfileOpen(false)}
+          />
+        </>
       )
     },
   },
 ]
 
-function ScholarTable({ data }: { data: ScholarWithStatus[] }) {
+function ScholarTable({ data }: { data: Scholar[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -236,28 +244,29 @@ function ScholarTable({ data }: { data: ScholarWithStatus[] }) {
       columnFilters,
       columnVisibility,
     },
+    initialState: {
+      pagination: {
+        pageSize: 6,
+      },
+    },
   })
 
-  const exportData = () => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + columns.map(col => col.header as string).join(",") + "\n"
-      + data.map(row => 
-          columns.map(col => {
-            if (col.accessorKey) {
-              return row[col.accessorKey as keyof ScholarWithStatus]
-            }
-            return ''
-          }).join(",")
-        ).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "scholars_data.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  const handleExport = React.useCallback(async (format: 'csv' | 'xlsx' | 'pdf') => {
+    try {
+      await exportData(data, format)
+      toast({
+        title: "Export Successful",
+        description: `Data exported as ${format.toUpperCase()} successfully.`,
+      })
+    } catch (error) {
+      console.error("Export failed:", error)
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting the data. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }, [data])
 
   return (
     <div className="w-full space-y-4">
@@ -271,10 +280,26 @@ function ScholarTable({ data }: { data: ScholarWithStatus[] }) {
           className="max-w-sm"
         />
         <div className="flex gap-2">
-          <Button onClick={exportData} variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleExport('csv')}>
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                Export as Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -369,35 +394,27 @@ function ScholarTable({ data }: { data: ScholarWithStatus[] }) {
 export function ScholarTableWithTabs({ scholars }: ScholarProps) {
   const [activeTab, setActiveTab] = React.useState("all")
 
-  const data = React.useMemo(() => {
-    return scholars.map(scholar => ({
-      ...scholar,
-      status: Math.random() > 0.6 ? "Complete" : Math.random() > 0.3 ? "Incomplete" : "Inactive" as "Complete" | "Incomplete" | "Inactive"
-    }))
-  }, [scholars])
-
   const filteredData = React.useMemo(() => {
-    if (activeTab === "all") return data
-    return data.filter(scholar => scholar.status.toLowerCase() === activeTab)
-  }, [data, activeTab])
+    if (activeTab === "all") return scholars
+    const status = activeTab === "complete" ? "Complete" : "Incomplete"
+    return scholars.filter(scholar => scholar.returnServiceCount >= 5 ? "Complete" : "Incomplete" === status)
+  }, [scholars, activeTab])
 
   const statusCounts = React.useMemo(() => {
     return {
-      all: data.length,
-      complete: data.filter(s => s.status === "Complete").length,
-      incomplete: data.filter(s => s.status === "Incomplete").length,
-      inactive: data.filter(s => s.status === "Inactive").length,
+      all: scholars.length,
+      complete: scholars.filter(s => s.returnServiceCount >= 5).length,
+      incomplete: scholars.filter(s => s.returnServiceCount < 5).length,
     }
-  }, [data])
+  }, [scholars])
 
   return (
     <div className="w-full space-y-4">
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All ({statusCounts.all})</TabsTrigger>
-          <TabsTrigger value="complete">Complete ({statusCounts.complete})</TabsTrigger>
-          <TabsTrigger value="incomplete">Incomplete ({statusCounts.incomplete})</TabsTrigger>
-          <TabsTrigger value="inactive">Inactive ({statusCounts.inactive})</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="all" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">All ({statusCounts.all})</TabsTrigger>
+          <TabsTrigger value="complete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">Complete ({statusCounts.complete})</TabsTrigger>
+          <TabsTrigger value="incomplete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">Incomplete ({statusCounts.incomplete})</TabsTrigger>
         </TabsList>
         <TabsContent value="all">
           <ScholarTable data={filteredData} />
@@ -406,9 +423,6 @@ export function ScholarTableWithTabs({ scholars }: ScholarProps) {
           <ScholarTable data={filteredData} />
         </TabsContent>
         <TabsContent value="incomplete">
-          <ScholarTable data={filteredData} />
-        </TabsContent>
-        <TabsContent value="inactive">
           <ScholarTable data={filteredData} />
         </TabsContent>
       </Tabs>

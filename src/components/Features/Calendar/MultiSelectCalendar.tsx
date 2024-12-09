@@ -1,215 +1,153 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { format, isSameDay, startOfMonth, endOfMonth, setDate } from "date-fns";
+import * as React from "react"
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar } from "@/components/ui/calendar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
+import { getEvents, EventResponse } from "@/components/Features/Calendar/_actions/actions"
+import { DayContentProps } from "react-day-picker"
+import { parseISO, isSameDay, startOfDay } from 'date-fns'
+import { toZonedTime, format } from 'date-fns-tz'
 
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "../../ui/button";
+const TIMEZONE = 'Asia/Manila' // You can make this configurable if needed
 
-// Define the EventDay type
-type EventDay = {
-  date: Date;
-  category: "previous" | "today" | "upcoming";
-  title: string;
-};
-
-// Define the props for the Day component
-interface DayProps {
-  date: Date;
-  className?: string;
-  onClick?: () => void;
-  selected?: boolean;
-  displayMonth?: Date; // Updated type to match react-day-picker's expected type
-}
-
-
-export default function FullEventCalendar() {
-  const today = new Date();
-  const currentday = new Date().getDate();
-  const [currentMonth, setCurrentMonth] = React.useState<Date>(today);
-  const [eventDays, setEventDays] = React.useState<EventDay[]>([]);
-  const [selectedEvent, setSelectedEvent] = React.useState<EventDay | null>(null);
+export default function CalendarEvents() {
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [events, setEvents] = React.useState<EventResponse[]>([])
+  const [selectedEvent, setSelectedEvent] = React.useState<EventResponse | null>(null)
 
   React.useEffect(() => {
-    const days = [
-      {
-        date: setDate(currentMonth, 2),
-        category: "previous" as const,
-        title: "Previous Event 1",
-      },
-      {
-        date: setDate(currentMonth, 10),
-        category: "previous" as const,
-        title: "Previous Event 2",
-      },
-      {
-        date: setDate(currentMonth, 14),
-        category: "previous" as const,
-        title: "Previous Event 3",
-      },
-      {
-        date: setDate(currentMonth, currentday),
-        category: "today" as const,
-        title: "Today's Event",
-      },
-      {
-        date: setDate(currentMonth, 27),
-        category: "upcoming" as const,
-        title: "Upcoming Event 1",
-      },
-      {
-        date: setDate(currentMonth, 28),
-        category: "upcoming" as const,
-        title: "Upcoming Event 2",
-      },
-      {
-        date: setDate(currentMonth, 31),
-        category: "upcoming" as const,
-        title: "Upcoming Event 3",
-      },
-    ].map((event) => ({
-      ...event,
-      date: new Date(
-        currentMonth.getFullYear(),
-        currentMonth.getMonth(),
-        event.date.getDate()
-      ),
-    })) as EventDay[];
-  
-    setEventDays(days);
-  }, [currentMonth]);
-
-  const getCategoryBgColor = (category: "previous" | "today" | "upcoming") => {
-    switch (category) {
-      case "previous":
-        return "bg-red-500 text-black hover:bg-red-600 rounded-full w-6 h-6 mt-2 mx-2";
-      case "today":
-        return "bg-blue-500 text-black hover:bg-blue-600 rounded-full w-6 h-6 mt-2 mx-2";
-      case "upcoming":
-        return "bg-green-500 text-black hover:bg-green-600 rounded-full w-6 h-6 mt-2 mx-2";
+    const fetchEvents = async () => {
+      const fetchedEvents = await getEvents()
+      if (Array.isArray(fetchedEvents)) {
+        setEvents(fetchedEvents)
+      }
     }
-  };
+    fetchEvents()
+  }, [])
 
-  const handleDayClick = (eventDay: EventDay) => {
-    setSelectedEvent(eventDay);
-  };
+  const getEventColor = (status: string) => {
+    switch (status) {
+      case 'previous':
+        return 'bg-red-500 hover:bg-red-300'
+      case 'ongoing':
+        return 'bg-[#4ADE80] hover:bg-green-300'
+      case 'upcoming':
+        return 'bg-[#60A5FA] hover:bg-blue-300'
+      default:
+        return 'bg-gray-200'
+    }
+  }
 
-  const closeOverlay = () => {
-    setSelectedEvent(null);
-  };
+  const handleDayClick = (day: Date, events: EventResponse[]) => {
+    if (events.length === 1) {
+      setSelectedEvent(events[0])
+    }
+  }
+
+  const CustomDayContent = (props: DayContentProps) => {
+    const { date, displayMonth } = props
+    const zonedDate = toZonedTime(date, TIMEZONE)
+    const dayEvents = events.filter(event => isSameDay(parseISO(event.date), zonedDate))
+    const isSunday = zonedDate.getDay() === 0
+    const isOutsideMonth = zonedDate.getMonth() !== displayMonth?.getMonth()
+
+    if (dayEvents.length > 0) {
+      return (
+        <div 
+          className={`w-7 h-7 rounded-full ${getEventColor(dayEvents[0].status)} cursor-pointer flex items-center justify-center`}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleDayClick(zonedDate, dayEvents)
+          }}
+        >
+          <span className="text-black font-medium">{zonedDate.getDate()}</span>
+        </div>
+      )
+    }
+
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <span className={cn(
+          "text-sm",
+          isSunday && "text-red-500",
+          isOutsideMonth && "text-slate-400"
+        )}>
+          {zonedDate.getDate()}
+        </span>
+      </div>
+    )
+  }
 
   return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Event Calendar</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-1 items-center">
-          <TooltipProvider>
-            <Calendar
-              mode="multiple"
-              selected={eventDays.map((event) => event.date)}
-              onMonthChange={setCurrentMonth}
-              className="grid grid-cols-7 gap-2 px-2 w-full sm:w-[300px] mx-auto rounded-md border"
-              components={{
-                Day: ({ date, className, displayMonth, ...props }: DayProps) => { // Destructure displayMonth
-                  const startOfMonthDate = startOfMonth(currentMonth);
-                  const startDayIndex = startOfMonthDate.getDay();
-                  const eventDay = eventDays.find((event) =>
-                    isSameDay(event.date, date),
-                  );
-              
-                  // Adjust index to align with the weekday start
-                  const dayIndex = date.getDate() + startDayIndex - 1;
-              
-                  return (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          {...props} // `displayMonth` is removed here
-                          onClick={() => eventDay && handleDayClick(eventDay)}
-                          className={cn(
-                            "flex items-center justify-center h-10 w-10 font-normal rounded-full",
-                            eventDay ? getCategoryBgColor(eventDay.category) : "text-foreground",
-                            "hover:bg-yellow-300 hover:text-black focus:bg-yellow-300 focus:text-primary-foreground",
-                            className,
-                            dayIndex % 7 === 0 ? "ml-auto" : "",
-                            dayIndex % 7 === 6 ? "mr-auto" : ""
-                          )}
-                        >
-                          <time dateTime={format(date, "yyyy-MM-dd")}>
-                            {format(date, "d")}
-                          </time>
-                        </button>
-                      </TooltipTrigger>
-                      {eventDay && (
-                        <TooltipContent className={cn(getCategoryBgColor(eventDay.category), 'flex flex-col py-5 w-full justify-center items-center rounded-sm')}>
-                          <p>{eventDay.title}</p>
-                          <p className="text-xs capitalize">
-                            {eventDay.category} event
-                          </p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  );
-                },
-              }}
-            />
-          </TooltipProvider>
-          <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium">Event Categories:</h3>
-            <div className="flex gap-8">
-              <Badge
-                className={cn(
-                  "text-primary-foreground font-normal bg-red-500 hover:bg-yellow-600",
-                )}
-              >
-                Previous
-              </Badge>
-              <Badge
-                className={cn(
-                  "text-primary-foreground font-normal bg-blue-500 hover:bg-green-600",
-                )}
-              >
-                Today
-              </Badge>
-              <Badge
-                className={cn(
-                  "text-primary-foreground font-normal bg-green-500 hover:bg-blue-600",
-                )}
-              >
-                Upcoming
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
+    <div className="space-y-4">
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        className="border rounded-md p-3"
+        classNames={{
+          months: "space-y-4",
+          month: "space-y-4",
+          caption: "flex justify-center pt-1 relative items-center",
+          caption_label: "text-sm font-medium",
+          nav: "space-x-1 flex items-center",
+          nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+          nav_button_previous: "absolute left-1",
+          nav_button_next: "absolute right-1",
+          table: "w-full border-collapse space-y-1",
+          head_row: "flex",
+          head_cell: "text-slate-500 rounded-md w-9 font-normal text-[0.8rem] dark:text-slate-400",
+          row: "flex w-full mt-2",
+          cell: "text-center text-sm relative p-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md flex items-center justify-center",
+          day: "h-9 w-9 p-0 font-normal flex items-center justify-center",
+          day_selected: "",
+          day_today: "bg-slate-100 rounded-md text-slate-900 dark:bg-slate-800 dark:text-slate-50",
+          day_outside: "text-slate-500 opacity-50 dark:text-slate-400",
+          day_disabled: "text-slate-500 opacity-50 dark:text-slate-400",
+          day_range_middle: "aria-selected:bg-slate-100 aria-selected:text-slate-900 dark:aria-selected:bg-slate-800 dark:aria-selected:text-slate-50",
+          day_hidden: "invisible",
+        }}
+        components={{
+          IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+          IconRight: () => <ChevronRight className="h-4 w-4" />,
+          DayContent: CustomDayContent
+        }}
+      />
 
-        {/* Overlay for Event Details */}
-        {selectedEvent && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-4 rounded-lg max-w-xs w-full">
-              <h4 className="text-lg font-semibold text-black mb-2">
-                {selectedEvent.title}
-              </h4>
-              <p className="text-black">{format(selectedEvent.date, "MMMM d, yyyy")}</p>
-              <p className="text-sm text-black capitalize">{selectedEvent.category} event</p>
-              <Button
-                onClick={closeOverlay}
-                className="mt-5 text-primary bg-background hover:bg-ys hover:text-white"
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
-  );
+      <div className="flex flex-col space-y-2">
+        <h3 className="text-sm font-medium">Categories</h3>
+        <div className="flex gap-2">
+          <div className="bg-red-500 text-xs px-4 py-1 rounded-full">Previous</div>
+          <div className="bg-[#4ADE80] text-xs px-4 py-1 rounded-full">Ongoing</div>
+          <div className="bg-[#60A5FA] text-xs px-4 py-1 rounded-full">Upcoming</div>
+        </div>
+      </div>
+
+      <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedEvent?.event_name}</DialogTitle>
+            <DialogDescription>
+              <div className="space-y-2 mt-2">
+                <p><strong>Date:</strong> {selectedEvent?.date}</p>
+                <p><strong>Time:</strong> {selectedEvent?.time_from} - {selectedEvent?.time_to}</p>
+                <p><strong>Location:</strong> {selectedEvent?.location}</p>
+                <p><strong>Description:</strong> {selectedEvent?.description}</p>
+                <p><strong>Status:</strong> {selectedEvent?.status}</p>
+                {selectedEvent?.school && (
+                  <p><strong>School:</strong> {selectedEvent.school.school_name}</p>
+                )}
+                {selectedEvent?.barangay && (
+                  <p><strong>Barangay:</strong> {selectedEvent.barangay.baranggay_name}</p>
+                )}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
 }
+

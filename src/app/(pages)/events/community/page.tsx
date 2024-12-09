@@ -1,12 +1,14 @@
-import CommunityComponent from "@/components/Events/Community/Community"
-import { fetchBarangays, fetchSchools } from "@/components/fetchingactions/_fetch";
-import { Baranggay, School } from "@/components/types";
+import CommunityComponent from "@/components/Events/Community/Community";
+import { fetchBarangays } from "@/components/fetchingactions/_fetch";
+import { fetchedUser } from "@/components/Static/_actions/useractions";
+import { cookies } from "next/headers";
 
-export default async function CommunityPage() {
-    const barangay: Baranggay[] = await fetchBarangays();
+export default async function SchoolPage() {
+    const baranggays = await fetchBarangays(cookies());
+    const type = await fetchedUser()
     return (
         <>
-            <CommunityComponent barangays={barangay} />
+            <CommunityComponent barangays={baranggays} admintype={type.admin.admin_type_id} />
         </>
-    )
+    );
 }

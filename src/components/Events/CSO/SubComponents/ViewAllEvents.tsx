@@ -1,4 +1,4 @@
-"use client";
+{/*"use client";
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -142,4 +142,4 @@ export default function ViewAllEvents({events}: ViewAllEventsProps) {
             )}
         </div>
     );
-}
+}*/}

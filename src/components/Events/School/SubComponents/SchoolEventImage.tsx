@@ -3,7 +3,7 @@ import Image from "next/image"
 import { getImage } from "@/components/Events/_actions/events"
 import { Event } from "@/components/types"
 
-export function EventImage({ event, title }: { event: Event, title: string }) {
+export function SchoolEventImage({ event, title }: { event: Event, title: string }) {
   const [imageUrl, setImageUrl] = React.useState(event.image);
   const [retryCount, setRetryCount] = React.useState(0);
   const maxRetries = 3;
@@ -49,7 +49,7 @@ export function EventImage({ event, title }: { event: Event, title: string }) {
         alt={event.event_name || "Event Image"} 
         width={200} 
         height={100} 
-        className={`w-full h-24 object-cover ${headerColorClass}`}
+        className={`w-full h-24 object-cover ${headerColorClass} rounded-t-lg`}
         onError={() => {
             console.error(`Failed to load image: ${imageUrl}`);
             setImageUrl("");  // Reset the URL to trigger a retry

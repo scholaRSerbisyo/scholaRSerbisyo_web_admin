@@ -3,19 +3,20 @@
 import * as React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import AddEventButtonComponent from "@/components/Static/AddEventFunction/AddEventButton"
-import { EventSection } from "@/components/Events/CSO/SubComponents/EventSection"
+import { SchoolEventSection } from "./SchoolEventSection"
 import { EventDetailsDialog } from "@/components/Events/CSO/SubComponents/EventDetailsDialog"
 import { Event } from "@/components/types"
 import { useTheme } from "next-themes"
+import { SchoolEventDetailsDialog } from "./SchoolEventDetails"
 import { parseISO, isBefore, isAfter, isWithinInterval } from 'date-fns'
-export const dynamic = "force-dynamic"
 
-interface CSOEventProps {
-  events: Event[]
-  admintype: number
+interface SchoolEventProps {
+    type: string
+    events: Event[]
+    admintype: number
 }
 
-export default function CSOComponent({events, admintype}: CSOEventProps) {
+export default function SchoolEvent({type, events, admintype}: SchoolEventProps) {
   const { theme } = useTheme()
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedEvent, setSelectedEvent] = React.useState<Event | null>(null);
@@ -53,25 +54,25 @@ export default function CSOComponent({events, admintype}: CSOEventProps) {
   return (
     <main className="flex min-h-screen flex-col gap-6 p-4 md:p-2">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">City Scholar Office (CSO)</h1>
+        <h1 className="text-2xl font-semibold">{type}</h1>
         <AddEventButtonComponent admintype={admintype} />
       </header>
       <div className="grid gap-6 md:grid-cols-[1fr,220px]">
         <div className={`space-y-5 border-2 rounded-lg p-3 ${theme == 'light'?'bg-gray-100':''}`}>
           <p className="font-bold text-lg">Registered Events</p>
-          <EventSection 
+          <SchoolEventSection 
             title="Ongoing Events" 
             events={ongoingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
-          <EventSection 
+          <SchoolEventSection 
             title="Upcoming Events" 
             events={upcomingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
-          <EventSection 
+          <SchoolEventSection 
             title="Previous Events" 
             events={previousEvents}
             isLoading={isLoading}
@@ -108,9 +109,8 @@ export default function CSOComponent({events, admintype}: CSOEventProps) {
         </aside>
       </div>
       {selectedEvent && (
-        <EventDetailsDialog event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+        <SchoolEventDetailsDialog event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
     </main>
   )
 }
-

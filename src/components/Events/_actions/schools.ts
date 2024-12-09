@@ -1,72 +1,79 @@
-"use server"
+"use server";
 
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
-import { School } from "@/components/types";
+import { School, School2, Event } from "@/components/types";
+import { getImage } from "./events";
 
-const token = cookies().get('session')?.value;
-
-export const getSchools = async () => { 
+export const getSchools = async () => {
+    const token = cookies().get("session")?.value
     try {
-        const req: any = await fetch(`${API_URL}/api/school/getschools`, {
+        const req = await fetch(`${API_URL}/api/school/getschools`, {
             cache: 'no-store',
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        })
+                "Accept": "application/json",
+            },
+        });
 
-        const res = await req.json()
+        const res = await req.json();
 
-        console.log(res)
-
-        if(!req.ok) {
-            const message = res?.message
-            return { message }
+        if (!req.ok) {
+            const message = res?.message || "Failed to fetch schools";
+            return { message };
         }
-        else
-        {
-            return res
+
+        return res as School[];
+    } catch (error: any) {
+        console.error("Error fetching schools:", error);
+        return { message: error.message || "An error occurred" };
+    }
+};
+
+export async function getSchool(id: string): Promise<School2> {
+    const token = cookies().get("session")?.value;
+    if (!token) {
+        throw new Error("Authentication token is missing");
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/school/schools/${id}`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch school details");
         }
+
+        const school: School2 = await response.json();
+
+        if (Array.isArray(school.events)) {
+            const eventsWithImages = await Promise.all(
+                school.events.map(async (event: Event) => {
+                    try {
+                        const imageUrl = await getImage(event.event_image_uuid);
+                        return { ...event, imageUrl };
+                    } catch (error) {
+                        console.error(`Error fetching image for event ${event.event_id}:`, error);
+                        return event; // Return the event without imageUrl if there's an error
+                    }
+                })
+            );
+
+            school.events = eventsWithImages;
+        }
+
+        return school;
     } catch (error) {
-        const message = error
-        return { message }
+        console.error("Error fetching school:", error);
+        throw new Error(`Failed to fetch school data: ${error}`);
     }
 }
-
-export async function getSchool(id: string): Promise<School> {
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-  
-    try {
-      const response = await fetch(`${API_URL}/api/school/schools/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-
-
-      console.log(response)
-  
-      if (!response.ok) {
-        throw new Error(`Failed to fetch school data: ${response.statusText}`);
-      }
-  
-      const data = await response.json();
-  
-      if (!data || typeof data !== 'object' || !('school_id' in data)) {
-        throw new Error('Invalid school data received');
-      }
-  
-      return data as School;
-    } catch (error) {
-      console.error('Error fetching school data:', error);
-      throw error;
-    }
-  }
-  

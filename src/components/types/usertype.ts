@@ -15,7 +15,7 @@ export interface User {
 interface Admin {
     admin_id: number
     admin_name: string
-    admin_type: number
+    admin_type_id: number
     user_id: number
     event_type_id: number
     created_at: string
@@ -39,4 +39,8 @@ export interface Scholar {
     user: User
     school: School
     baranggay: Baranggay
+}
+
+export interface ScholarWithStatus extends Scholar {
+    status: "Complete" | "Incomplete" | "Inactive"
 }

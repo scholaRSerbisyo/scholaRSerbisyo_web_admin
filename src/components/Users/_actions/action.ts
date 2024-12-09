@@ -3,11 +3,11 @@
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
 
-const token = cookies().get("session")?.value
+const token = cookies().get("session")?.value;
 
 export const getScholars = async () => {
     try {
-        const req: any = await fetch(`${API_URL}/api/user/scholars`, {
+        const response = await fetch(`${API_URL}/api/events/scholars/return-service-count`, {
             cache: 'no-store',
             method: "GET",
             headers: {
@@ -15,26 +15,22 @@ export const getScholars = async () => {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
-        })
+        });
 
-        const res = await req.json()
+        const data = await response.json();
 
-        console.log(res)
-
-        if(!req.ok) {
-            const message = res?.message
-
-            return { message }
+        if (!response.ok) {
+            const message = data?.message || 'An error occurred while fetching scholars';
+            return { error: message };
         }
-        else
-        {
-            const data = res
 
-            return data
-        }
+        return {
+            scholars: data.scholars,
+            total: data.total
+        };
     } catch (error) {
-        const message = error
-
-        return { message }
+        console.error('Error fetching scholars:', error);
+        return { error: 'An unexpected error occurred' };
     }
 }
+

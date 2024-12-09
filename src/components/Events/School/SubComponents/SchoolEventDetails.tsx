@@ -12,12 +12,12 @@ import { useRouter } from 'next/navigation'
 import { Calendar, Clock, MapPin, Edit2Icon } from 'lucide-react'
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
 
-interface EventDetailsDialogProps {
+interface SchoolEventDetailsDialogProps {
     event: Event
     onClose: () => void
 }
 
-export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) {
+export function SchoolEventDetailsDialog({ event, onClose }: SchoolEventDetailsDialogProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [showAttendees, setShowAttendees] = useState(false)
