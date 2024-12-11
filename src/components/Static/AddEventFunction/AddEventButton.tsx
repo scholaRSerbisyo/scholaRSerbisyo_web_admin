@@ -38,7 +38,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { 
   addEvent, 
-  getAdmins, 
   getEventTypes, 
   getSchools, 
   getBaranggays 
@@ -47,7 +46,8 @@ import { PlusIcon } from 'lucide-react';
 import { createUUID } from "@/util/uuid";
 import { useRouter } from 'next/navigation';
 import { useTheme } from "next-themes";
-import { Admin, EventType, School, Baranggay } from "@/components/types"
+import { EventType, School, Baranggay } from "@/components/types"
+import { sendPushNotification } from "./_actions/notifications";
 
 const formSchema = z.object({
   event_name: z.string().min(2, "Event Title must be at least 2 characters").max(50),
@@ -74,7 +74,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
   const { toast } = useToast();
   const [image, setImage] = React.useState<string>("");
   const [preview, setPreview] = React.useState<string | null>(null);
-  const [organizers, setOrganizers] = React.useState<Admin[]>([]);
   const [eventTypes, setEventTypes] = React.useState<EventType[]>([]);
   const [schools, setSchools] = React.useState<School[]>([]);
   const [baranggays, setBaranggays] = React.useState<Baranggay[]>([]);
@@ -95,7 +94,7 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
       time_from: "",
       time_to: "",
       location: "",
-      admin_id: undefined,
+      admin_id: 1,
       event_type_id: undefined,
       school_id: undefined,
       baranggay_id: undefined,
@@ -157,13 +156,11 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const [adminsData, eventTypesData, schoolsData, baranggaysData] = await Promise.all([
-          getAdmins(),
+        const [eventTypesData, schoolsData, baranggaysData] = await Promise.all([
           getEventTypes(),
           getSchools(),
           getBaranggays()
         ]);
-        setOrganizers(adminsData);
         setEventTypes(eventTypesData);
         setSchools(schoolsData);
         setBaranggays(baranggaysData);
@@ -179,7 +176,7 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
 
   const onSubmit = async (values: EventFormValues) => {
     setIsLoading(true);
-
+  
     if (!image) {
       setError("Please upload an image before submitting.");
       setIsLoading(false);
@@ -188,7 +185,7 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
   
     try {
       const image_uuid: string = createUUID();
-
+  
       const data = {
         event_image_uuid: image_uuid,
         event_name: values.event_name,
@@ -197,14 +194,14 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
         time_from: values.time_from,
         time_to: values.time_to,
         location: values.location,
-        admin_id: values.admin_id,
+        admin_id: 1,
         event_type_id: values.event_type_id,
         school_id: values.school_id,
         status: 'ongoing',
         baranggay_id: values.baranggay_id,
         image: image
       };
-
+  
       const response: any = await addEvent(data);
       console.log(response)
       router.refresh();
@@ -221,6 +218,27 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
           description: response[0],
         });
         closeDialog();
+  
+        // Send push notification
+        try {
+          const eventType = eventTypes.find(et => et.event_type_id === values.event_type_id);
+          await sendPushNotification({
+            title: 'New Event Added',
+            body: `A new event "${data.event_name}" has been added.`,
+            data: {
+              eventId: response[0].event_id,
+              eventName: data.event_name,
+              eventType: eventType ? eventType.name : 'Unknown',
+              description: data.description,
+              date: data.date,
+              timeFrom: data.time_from,
+              timeTo: data.time_to,
+            },
+          });
+          console.log('Push notification sent successfully');
+        } catch (error) {
+          console.error('Failed to send push notification:', error);
+        }
       }
     } catch (error) {
       setError("Failed to upload the event data.");
@@ -371,36 +389,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="admin_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Organizer</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(Number(value))} 
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select organizer" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {organizers.map((org) => (
-                            <SelectItem 
-                              key={org.admin_id} 
-                              value={org.admin_id.toString()}
-                            >
-                              {org.admin_name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 {admintype === 1 ? (
                   <FormField

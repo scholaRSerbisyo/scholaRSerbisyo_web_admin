@@ -4,7 +4,7 @@ import { fetchedUser } from "@/components/Static/_actions/useractions";
 import { cookies } from "next/headers";
 
 export default async function SchoolPage() {
-    const baranggays = await fetchBarangays(cookies());
+    const baranggays = await fetchBarangays();
     const type = await fetchedUser()
     return (
         <>

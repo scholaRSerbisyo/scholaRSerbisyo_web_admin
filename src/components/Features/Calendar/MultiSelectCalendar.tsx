@@ -9,6 +9,7 @@ import { getEvents, EventResponse } from "@/components/Features/Calendar/_action
 import { DayContentProps } from "react-day-picker"
 import { parseISO, isSameDay, startOfDay } from 'date-fns'
 import { toZonedTime, format } from 'date-fns-tz'
+import { useSidebar } from "@/components/ui/sidebar"
 
 const TIMEZONE = 'Asia/Manila' // You can make this configurable if needed
 
@@ -16,6 +17,8 @@ export default function CalendarEvents() {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [events, setEvents] = React.useState<EventResponse[]>([])
   const [selectedEvent, setSelectedEvent] = React.useState<EventResponse | null>(null)
+
+  const { state: sidebarState } = useSidebar();
 
   React.useEffect(() => {
     const fetchEvents = async () => {
@@ -86,7 +89,9 @@ export default function CalendarEvents() {
         mode="single"
         selected={date}
         onSelect={setDate}
-        className="border rounded-md p-3"
+        className={`border rounded-md p-3 ${
+          sidebarState === 'collapsed' ? 'sm:w-[22rem]' : 'sm:w-[20rem]'
+        }`}
         classNames={{
           months: "space-y-4",
           month: "space-y-4",
@@ -98,9 +103,13 @@ export default function CalendarEvents() {
           nav_button_next: "absolute right-1",
           table: "w-full border-collapse space-y-1",
           head_row: "flex",
-          head_cell: "text-slate-500 rounded-md w-9 font-normal text-[0.8rem] dark:text-slate-400",
+          head_cell: `text-slate-500 rounded-md w-9 font-normal text-[0.8rem] dark:text-slate-400 ${
+            sidebarState === 'collapsed' ? 'sm:px-[1.4rem]' : 'sm:px-[1.27rem]'
+          }`,
           row: "flex w-full mt-2",
-          cell: "text-center text-sm relative p-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md flex items-center justify-center",
+          cell: `text-center text-sm relative p-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md flex items-center justify-center ${
+            sidebarState === 'collapsed' ? 'sm:px-[0.32rem]' : 'sm:px-[0.2rem]'
+          }`,
           day: "h-9 w-9 p-0 font-normal flex items-center justify-center",
           day_selected: "",
           day_today: "bg-slate-100 rounded-md text-slate-900 dark:bg-slate-800 dark:text-slate-50",
@@ -118,7 +127,7 @@ export default function CalendarEvents() {
 
       <div className="flex flex-col space-y-2">
         <h3 className="text-sm font-medium">Categories</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 justify-center">
           <div className="bg-red-500 text-xs px-4 py-1 rounded-full">Previous</div>
           <div className="bg-[#4ADE80] text-xs px-4 py-1 rounded-full">Ongoing</div>
           <div className="bg-[#60A5FA] text-xs px-4 py-1 rounded-full">Upcoming</div>

@@ -1,5 +1,6 @@
 "use server"
 
+import { cookies } from "next/headers";
 import { getBaranggays } from "../Events/_actions/barangays";
 import { getCSOEvents, getImage } from "../Events/_actions/events";
 import { getSchools } from "../Events/_actions/schools";
@@ -44,14 +45,15 @@ export async function fetchSchools(): Promise<School[]> {
 }
 
 
-export async function fetchBarangays(cookies: ReadonlyRequestCookies): Promise<Baranggay[]> {
+export async function fetchBarangays(): Promise<Baranggay[]> {
+  const token = cookies().get("session")?.value;
   try {
-      const token = cookies.get("session")?.value;
       if (!token) throw new Error("Authentication token not found");
 
-      const fetchedBaranggays = await getBaranggays(token);
+      const fetchedBaranggays = await getBaranggays();
       if (Array.isArray(fetchedBaranggays)) {
           return fetchedBaranggays;
+          console.log(fetchBarangays)
       } else {
           console.error("Error fetching schools:", fetchedBaranggays.message);
           return [];

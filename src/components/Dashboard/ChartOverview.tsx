@@ -57,7 +57,11 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   )
 }
 
-export function ChartOverviewComponent() {
+interface ChartProps {
+  admintype: number
+}
+
+export function ChartOverviewComponent({admintype}: ChartProps) {
   const [visibility, setVisibility] = React.useState({
     CSO: true,
     School: true,

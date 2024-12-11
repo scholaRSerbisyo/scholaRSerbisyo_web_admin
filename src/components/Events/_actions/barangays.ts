@@ -1,9 +1,12 @@
 "use server";
 
 import API_URL from "@/constants/constants";
-import { Baranggay, Baranggay2 } from "@/components/types";
+import { Baranggay, Baranggay2, Event } from "@/components/types";
+import { cookies } from "next/headers";
+import { getImage } from "./events";
 
-export const getBaranggays = async (token: string) => { 
+export const getBaranggays = async () => { 
+    const token = cookies().get('session')?.value
     try {
         const req = await fetch(`${API_URL}/api/baranggay/getbaranggays`, {
             cache: 'no-store',
@@ -29,24 +32,48 @@ export const getBaranggays = async (token: string) => {
     }
 };
 
-export async function getBaranggay(id: string, token: string): Promise<Baranggay2> {
+  export async function getBaranggay(id: string): Promise<Baranggay2> {
+    const token = cookies().get("session")?.value;
+    if (!token) {
+        throw new Error("Authentication token is missing");
+    }
+
     try {
-      const response = await fetch(`${API_URL}/api/baranggay/baranggays/${id}`, {
-        cache: 'no-store',
+        const response = await fetch(`${API_URL}/api/baranggay/baranggays/${id}`, {
+            cache: 'no-store',
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
                 "Accept": "application/json",
             },
-      });
-      if (!response.ok) throw new Error("Failed to fetch barangay details");
-      const baranggay = await response.json();
+        });
 
-      console.log(baranggay)
-      return baranggay;
+        if (!response.ok) {
+            throw new Error("Failed to fetch school details");
+        }
+
+        const barangay: Baranggay2 = await response.json();
+
+        if (Array.isArray(barangay.events)) {
+            const eventsWithImages = await Promise.all(
+                barangay.events.map(async (event: Event) => {
+                    try {
+                        const imageUrl = await getImage(event.event_image_uuid);
+                        return { ...event, imageUrl };
+                    } catch (error) {
+                        console.error(`Error fetching image for event ${event.event_id}:`, error);
+                        return event; // Return the event without imageUrl if there's an error
+                    }
+                })
+            );
+
+            barangay.events = eventsWithImages;
+        }
+
+        return barangay;
     } catch (error) {
-      console.error("Error fetching barangay:", error);
-      throw new Error(`Failed to fetch barangay data: ${error}`); // Or re-throw the error if preferred
+        console.error("Error fetching school:", error);
+        throw new Error(`Failed to fetch school data: ${error}`);
     }
-  }
+}

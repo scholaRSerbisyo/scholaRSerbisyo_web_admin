@@ -12,15 +12,9 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const { id } = params;
 
   try {
-    // Retrieve the token from cookies
-    const token = cookies().get("session")?.value;
-
-    if (!token) {
-      throw new Error("Authorization token is missing");
-    }
 
     // Fetch the school details with the token
-    const baranggay: Baranggay2 = await getBaranggay(id, token);
+    const baranggay: Baranggay2 = await getBaranggay(id);
     const admintype = await fetchedUser();
 
     console.log(baranggay)

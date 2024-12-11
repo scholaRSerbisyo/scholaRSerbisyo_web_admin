@@ -37,32 +37,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { exportData } from "@/lib/utils/export"
 import { toast } from "@/hooks/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ScholarEventsDialog } from "./ScholarEventDialog"
 import { ScholarProfileDialog } from "./scholar-profile-dialog"
-
-export interface User {
-  id: number;
-  email: string;
-  email_verified_at: string | null;
-  role_id: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-}
-
-export interface School {
-  id: number;
-  name: string;
-}
-
-export interface Barangay {
-  id: number;
-  name: string;
-}
-
-export interface ScholarType {
-  id: number;
-  name: string;
-}
 
 export interface Scholar {
   id: number;
@@ -71,9 +48,18 @@ export interface Scholar {
   mobilenumber: string;
   age: number;
   yearLevel: string;
-  scholarType: ScholarType;
-  school: School;
-  barangay: Barangay;
+  scholarType: {
+    id: number;
+    name: string;
+  };
+  school: {
+    id: number;
+    name: string;
+  };
+  barangay: {
+    id: number;
+    name: string;
+  };
   returnServiceCount: number;
 }
 
@@ -192,7 +178,8 @@ const columns: ColumnDef<Scholar>[] = [
     id: "actions",
     cell: ({ row }) => {
       const scholar = row.original
-      const [isProfileOpen, setIsProfileOpen] = React.useState(false)
+      const [isEventsOpen, setIsEventsOpen] = React.useState(false)
+      const [isDetailsOpen, setIsDetailsOpen] = React.useState(false)
 
       return (
         <>
@@ -206,17 +193,25 @@ const columns: ColumnDef<Scholar>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
+              <DropdownMenuItem onClick={() => setIsDetailsOpen(true)}>
                 View Scholar Details
               </DropdownMenuItem>
-              <DropdownMenuItem>View Events Attended</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsEventsOpen(true)}>
+                View Events Attended
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <ScholarProfileDialog 
+          <ScholarEventsDialog 
             scholar={scholar}
-            open={isProfileOpen}
-            onClose={() => setIsProfileOpen(false)}
+            open={isEventsOpen}
+            onClose={() => setIsEventsOpen(false)}
+          />
+
+          <ScholarProfileDialog
+            scholar={scholar}
+            open={isDetailsOpen}
+            onClose={() => setIsDetailsOpen(false)}
           />
         </>
       )
@@ -393,6 +388,16 @@ function ScholarTable({ data }: { data: Scholar[] }) {
 
 export function ScholarTableWithTabs({ scholars }: ScholarProps) {
   const [activeTab, setActiveTab] = React.useState("all")
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const filteredData = React.useMemo(() => {
     if (activeTab === "all") return scholars
@@ -412,20 +417,79 @@ export function ScholarTableWithTabs({ scholars }: ScholarProps) {
     <div className="w-full space-y-4">
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="all" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">All ({statusCounts.all})</TabsTrigger>
-          <TabsTrigger value="complete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">Complete ({statusCounts.complete})</TabsTrigger>
-          <TabsTrigger value="incomplete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">Incomplete ({statusCounts.incomplete})</TabsTrigger>
+          <TabsTrigger value="all" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">
+            All ({isLoading ? '-' : statusCounts.all})
+          </TabsTrigger>
+          <TabsTrigger value="complete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">
+            Complete ({isLoading ? '-' : statusCounts.complete})
+          </TabsTrigger>
+          <TabsTrigger value="incomplete" className="data-[state=active]:bg-[#191851] data-[state=active]:text-white">
+            Incomplete ({isLoading ? '-' : statusCounts.incomplete})
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="all">
-          <ScholarTable data={filteredData} />
-        </TabsContent>
-        <TabsContent value="complete">
-          <ScholarTable data={filteredData} />
-        </TabsContent>
-        <TabsContent value="incomplete">
-          <ScholarTable data={filteredData} />
-        </TabsContent>
+        {isLoading ? (
+          <SkeletonTable />
+        ) : (
+          <>
+            <TabsContent value="all">
+              <ScholarTable data={filteredData} />
+            </TabsContent>
+            <TabsContent value="complete">
+              <ScholarTable data={filteredData} />
+            </TabsContent>
+            <TabsContent value="incomplete">
+              <ScholarTable data={filteredData} />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
+    </div>
+  )
+}
+
+function SkeletonTable() {
+  return (
+    <div className="w-full space-y-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-10 w-[250px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-[100px]" />
+          <Skeleton className="h-10 w-[100px]" />
+        </div>
+      </div>
+      <div className="rounded-md border overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {Array(7).fill(0).map((_, index) => (
+                  <TableHead key={index}>
+                    <Skeleton className="h-8 w-full" />
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array(6).fill(0).map((_, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {Array(7).fill(0).map((_, cellIndex) => (
+                    <TableCell key={cellIndex}>
+                      <Skeleton className="h-8 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-[200px]" />
+        <div className="flex items-center space-x-2">
+          <Skeleton className="h-8 w-[80px]" />
+          <Skeleton className="h-8 w-[80px]" />
+        </div>
+      </div>
     </div>
   )
 }

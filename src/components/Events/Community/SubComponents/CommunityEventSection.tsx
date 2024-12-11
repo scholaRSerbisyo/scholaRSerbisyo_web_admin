@@ -4,22 +4,23 @@ import { Button } from "@/components/ui/button"
 import { ChevronRight, Edit2Icon, Calendar, Clock, MapPin, ListCollapse, ArrowRight } from 'lucide-react'
 import { EventImage } from "@/components/Events/CSO/SubComponents/EventImage"
 import { Event } from "@/components/types"
-import { EditEventDialog } from './EditEventDialog'
+import { CommunityEditEventDialog } from './EditEventDialog'
 import { useTheme } from 'next-themes'
 import { updateEvent } from '../../_actions/events'
 import { toast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
+import { CommunityEventImage } from './CommunityEventImage'
 import { useSidebar } from '@/components/ui/sidebar'
 
-interface EventSectionProps {
+interface CommunityEventSectionProps {
   title: string
   events: Event[]
   isLoading: boolean
   onEventSelect: (event: Event) => void
 }
 
-export function EventSection({ title, events, isLoading, onEventSelect }: EventSectionProps) {
+export function CommunityEventSection({ title, events, isLoading, onEventSelect }: CommunityEventSectionProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -48,8 +49,6 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
         const eventDateTime = new Date(eventDate);
         const [fromHours, fromMinutes] = timeFrom.split(':').map(Number);
         const [toHours, toMinutes] = timeTo.split(':').map(Number);
-
-        const { state: sidebarState } = useSidebar();
 
         eventDateTime.setHours(fromHours, fromMinutes);
         const eventEndDateTime = new Date(eventDate);
@@ -117,7 +116,7 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
                                     className="shadow-md flex-shrink-0 w-[200px] first:ml-0 rounded-none"
                                 >
                                     <CardHeader className="p-0">
-                                        <EventImage event={event} title={title} />
+                                        <CommunityEventImage event={event} title={title} />
                                     </CardHeader>
                                     <CardContent className="p-3">
                                         <CardTitle className="text-sm mb-2 line-clamp-2">{event.event_name}</CardTitle>
@@ -171,7 +170,7 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
                     </div>
                 )}
                 {selectedEvent && (
-                    <EditEventDialog
+                    <CommunityEditEventDialog
                         event={selectedEvent}
                         onClose={handleCloseEditDialog}
                         onSave={handleSaveUpdateEvent}

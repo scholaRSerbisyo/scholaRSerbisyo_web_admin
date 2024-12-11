@@ -13,11 +13,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getEvents, EventResponse } from '@/components/Dashboard/_actions/actions'
 import Link from 'next/link';
+import { useSidebar } from '../ui/sidebar';
 
 type CardProps = React.ComponentProps<typeof Card>
 
 export function UpcomingEventsComponents({ className, ...props }: CardProps) {
   const [upcomingEvents, setUpcomingEvents] = useState<EventResponse[]>([]);
+
+  const { state: sidebarState } = useSidebar()
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -48,10 +51,14 @@ export function UpcomingEventsComponents({ className, ...props }: CardProps) {
   `;
 
   return (
-    <Card className={`w-full max-w-auto sm:w-auto mx-auto ${className}`} {...props}>
+    <Card className={`w-full max-w-auto sm:w-auto mx-auto ${className} ${
+      sidebarState === 'collapsed' ? 'sm:w-[23rem] transition-all duration-200 delay-100 ease-in-out' : 'sm:w-[20rem]'
+    }`} {...props}>
       <CardHeader className="rounded-t-lg bg-ys">
-        <CardTitle className="flex justify-between pr-20 text-black items-center">
-          <CalendarDays color="black" />Upcoming Events
+        <CardTitle className={`flex flex-row justify-start ${
+      sidebarState === 'collapsed' ? 'gap-x-[4rem] transition-all duration-200 delay-100 ease-in-out' : 'gap-x-[3rem]'
+    } text-black items-center`}>
+          <CalendarDays color="black" /><>Upcoming Events</>
         </CardTitle>
       </CardHeader>
       <Separator />
