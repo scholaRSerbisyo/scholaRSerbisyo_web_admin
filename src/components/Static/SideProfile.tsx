@@ -1,9 +1,6 @@
-
-import { getUser } from "@/auth/user";
 import SidebarComponent from "./Sidebar";
 import { fetchedUser } from "./_actions/useractions";
 import { User } from "../types/usertype";
-
 
 export default async function SideProfileFrame({
     children,

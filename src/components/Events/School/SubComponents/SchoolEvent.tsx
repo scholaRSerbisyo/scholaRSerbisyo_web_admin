@@ -60,19 +60,22 @@ export default function SchoolEvent({type, events, admintype}: SchoolEventProps)
       <div className="grid gap-6 md:grid-cols-[1fr,220px]">
         <div className={`space-y-5 border-2 rounded-lg p-3 ${theme == 'light'?'bg-gray-100':''}`}>
           <p className="font-bold text-lg">Registered Events</p>
-          <SchoolEventSection 
+          <SchoolEventSection
+            schoolname={type}
             title="Ongoing Events" 
             events={ongoingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
           <SchoolEventSection 
+            schoolname={type}
             title="Upcoming Events" 
             events={upcomingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
           <SchoolEventSection 
+            schoolname={type}
             title="Previous Events" 
             events={previousEvents}
             isLoading={isLoading}

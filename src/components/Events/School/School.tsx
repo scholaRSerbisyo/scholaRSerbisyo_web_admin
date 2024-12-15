@@ -19,19 +19,6 @@ import {
 import AddEventButtonComponent from "../../Static/AddEventFunction/AddEventButton"
 export const dynamic = "force-dynamic"
 
-{/*const schools: School1[] = [
-  { id: "1", name: "PHINMA - Cagayan de Oro College", totalEvents: 5 },
-  { id: "2", name: "Capital University", totalEvents: 10 },
-  { id: "3", name: "Lourdes College", totalEvents: 6 },
-  { id: "4", name: "University of Science and Technology of Southern Philippines", totalEvents: 5 },
-  { id: "5", name: "Pilgrim Christian College", totalEvents: 7 },
-  { id: "6", name: "Southern de Oro College", totalEvents: 6 },
-  { id: "7", name: "Xavier University- Ateneo de Cagayan", totalEvents: 11 },
-  { id: "8", name: "STI College", totalEvents: 10 },
-  { id: "9", name: "Liceo de Cagayan University", totalEvents: 5 },
-  { id: "10", name: "Vineyard International Polytechnic College", totalEvents: 8 },
-  { id: "11", name: "Golden Heritage Polytechnic College", totalEvents: 12 },
-]*/}
 interface SchoolProps {
   schools: School[]
   admintype: number
@@ -43,13 +30,16 @@ export default function SchoolComponent({schools, admintype}: SchoolProps) {
   const [currentPage, setCurrentPage] = React.useState(1)
   const rowsPerPage = 8
 
-  const filteredSchools = schools.filter(school =>
-    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredSchools = React.useMemo(() => {
+    return schools.filter(school =>
+      school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [schools, searchQuery])
 
   const totalPages = Math.ceil(filteredSchools.length / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
+  const currentSchools = filteredSchools.slice(startIndex, endIndex)
 
   const handleCreateEvent = () => {
     router.push("/events/school/create")
@@ -62,6 +52,10 @@ export default function SchoolComponent({schools, admintype}: SchoolProps) {
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
   }
+
+  React.useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
 
   return (
     <div className="container mx-auto flex flex-col h-[calc(100vh-7rem)]">
@@ -95,7 +89,7 @@ export default function SchoolComponent({schools, admintype}: SchoolProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {schools.map((school) => (
+              {currentSchools.map((school) => (
                 <TableRow 
                   key={school.school_id} 
                   className="hover:bg-muted/50 cursor-pointer"

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Image from "next/image";
-import { BadgeCheck, Bell, Calendar, ChevronRight, ChevronDown, ChevronsUpDown, CreditCard, LayoutDashboardIcon, GalleryVerticalEnd, LogOut, Settings2, Sparkles, User, UserRoundCheck } from 'lucide-react';
+import { BadgeCheck, Bell, Calendar, ChevronRight, ChevronDown, ChevronsUpDown, CreditCard, LayoutDashboardIcon, GalleryVerticalEnd, LogOut, Settings2, Sparkles, User, UserRoundCheck, Settings } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -39,6 +39,8 @@ import NavbarComponent from "./Navbar";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/auth/auth";
+import { Button } from "../ui/button";
+import { FAQDialog } from "../FAQs/FAQDialog";
 
 interface NavSubItem {
   title: string;
@@ -77,6 +79,7 @@ export default function SidebarComponent({
 }: SidebarComponentProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isFAQOpen, setIsFAQOpen] = useState(false);
 
   const getNavItems = (): NavItem[] => {
     const baseItems: NavItem[] = [
@@ -311,13 +314,13 @@ export default function SidebarComponent({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <Link
-                      href="/account"
-                      className="flex items-center w-full hover:bg-muted rounded-sm p-2 hover:ease-in-out"
+                    <Button
+                      className="flex items-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
+                      onClick={() => setIsFAQOpen(true)}
                     >
-                      <BadgeCheck className="mr-2 h-4 w-4" />
-                      Account
-                    </Link>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Button>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
@@ -332,6 +335,7 @@ export default function SidebarComponent({
         <SidebarRail />
       </Sidebar>
       <NavbarComponent>{children}</NavbarComponent>
+      <FAQDialog isOpen={isFAQOpen} onClose={() => setIsFAQOpen(false)} />
     </SidebarProvider>
   );
 }

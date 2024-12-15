@@ -91,6 +91,8 @@ export function SchoolEditEventDialog({ event, onClose, onSave, isLoading }: Sch
       }
       await onSave(updatedEvent)
       router.refresh()
+
+      window.location.reload();
       onClose()
     } catch (error) {
       console.error('Error updating event:', error)

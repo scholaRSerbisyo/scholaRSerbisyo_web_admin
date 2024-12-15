@@ -77,3 +77,30 @@ export async function getSchool(id: string): Promise<School2> {
         throw new Error(`Failed to fetch school data: ${error}`);
     }
 }
+
+export async function updateEvent(event: Event): Promise<Event> {
+    const token = cookies().get("session")?.value
+      try {
+        const response = await fetch(`${API_URL}/api/events/updateevent/${event.event_id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(event),
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.log(errorData)
+          throw new Error(errorData.message || 'Failed to update event');
+        }
+    
+        const updatedEvent = await response.json();
+        return updatedEvent.event;
+      } catch (error) {
+        console.error('Error updating event:', error);
+        throw error;
+      }
+    }

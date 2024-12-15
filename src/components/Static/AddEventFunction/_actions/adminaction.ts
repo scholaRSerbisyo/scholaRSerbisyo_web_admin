@@ -45,35 +45,31 @@ export const currentAdmin = async () => {
     return user.admin.admin_id
 }
 
-export const addEvent = async (data: any) => {
+export const addEvent = async (eventData: any) => {
+    const token = cookies().get("session")?.value
+  
     try {
-        const req: any = await fetch(`${API_URL}/api/events/createevent`, {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        })
-
-        const res = await req.json()
-        const dt = [res.message, req.status];
-
-        if (!req.ok) {
-            return dt;
-        }
-        else
-        {
-            return dt
-        }
+      const response = await fetch(`${API_URL}/api/events/createevent`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      })
+  
+      const data = await response.json()
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add event')
+      }
+  
+      return [data.message, response.status, data.event.event_id]
     } catch (error) {
-        const message = error
-
-        return message
+      console.error('Error adding event:', error)
+      return [(error as Error).message, 500, null]
     }
-}
+  }
 
 export const getSchools = async () => { 
     try {

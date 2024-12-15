@@ -1,22 +1,24 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ChevronRight, Edit2Icon, Calendar, Clock, MapPin, ListCollapse, ArrowRight } from 'lucide-react'
-import { EventImage } from "@/components/Events/CSO/SubComponents/EventImage"
-import { Event } from "@/components/types"
-import { EditEventDialog } from './EditEventDialog'
-import { useTheme } from 'next-themes'
-import { updateEvent } from '../../_actions/events'
-import { toast } from '@/hooks/use-toast'
-import { useRouter } from 'next/navigation'
-import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
-import { useSidebar } from '@/components/ui/sidebar'
+"use client";
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronRight, Edit2Icon, Calendar, Clock, MapPin, ListCollapse, ArrowRight } from 'lucide-react';
+import { EventImage } from "@/components/Events/CSO/SubComponents/EventImage";
+import { Event } from "@/components/types";
+import { EditEventDialog } from './EditEventDialog';
+import { useTheme } from 'next-themes';
+import { updateEvent } from '../../_actions/events';
+import { toast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { format, isBefore, isAfter, isWithinInterval } from 'date-fns';
+import { useSidebar } from '@/components/ui/sidebar';
 
 interface EventSectionProps {
-  title: string
-  events: Event[]
-  isLoading: boolean
-  onEventSelect: (event: Event) => void
+  title: string;
+  events: Event[];
+  isLoading: boolean;
+  onEventSelect: (event: Event) => void;
 }
 
 export function EventSection({ title, events, isLoading, onEventSelect }: EventSectionProps) {
@@ -30,8 +32,9 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
     const { state: sidebarState } = useSidebar();
 
     const handleViewAll = () => {
+        console.log(events[0].status)
         router.push(`/events/cso/viewevents?title=${encodeURIComponent(title)}&status=${encodeURIComponent(events[0].status)}`);
-    }
+    };
 
     const handleEditClick = (event: Event) => {
         setSelectedEvent(event);
@@ -49,8 +52,6 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
         const [fromHours, fromMinutes] = timeFrom.split(':').map(Number);
         const [toHours, toMinutes] = timeTo.split(':').map(Number);
 
-        const { state: sidebarState } = useSidebar();
-
         eventDateTime.setHours(fromHours, fromMinutes);
         const eventEndDateTime = new Date(eventDate);
         eventEndDateTime.setHours(toHours, toMinutes);
@@ -67,7 +68,6 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
     const handleSaveUpdateEvent = async (updatedEvent: Event) => {
         setIsUpdateLoading(true);
         try {
-
             const status = determineEventStatus(updatedEvent.date, updatedEvent.time_from, updatedEvent.time_to);
             
             const eventToUpdate = {
@@ -84,7 +84,7 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
                 title: "Event Updated",
                 description: "The event has been successfully updated.",
             });
-
+            router.refresh();
             handleCloseEditDialog();
         } catch (error) {
             console.error('Error updating event:', error);
@@ -99,9 +99,9 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
     };
 
     return (
-        <section className={`space-y-4 border rounded-lg ${theme == 'light' ? 'border-gray-300' : ''} ${
-            sidebarState === 'collapsed' ? 'w-[62.4rem] transition-all duration-200 delay-100 ease-in-out' : 'w-[49.4rem]'
-          } overflow-hidden`}>
+        <section className={`space-y-4 border rounded-lg ${theme === 'light' ? 'border-gray-300' : ''} ${
+            sidebarState === 'collapsed' ? 'w-[62.4rem]' : 'w-[49.4rem]'
+          } overflow-hidden transition-all duration-200 delay-100 ease-in-out`}>
             <div className={`bg-[#191851] text-primary-foreground p-3 rounded-t-lg`}>
                 <h2 className="text-lg font-semibold text-white text-center">{title}</h2>
             </div>
@@ -141,11 +141,11 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
                                         </div>
                                         <div className="flex justify-between">
                                             <Button size="sm" variant="secondary" className="text-xs bg-[#191851] text-white hover:bg-blue-800" onClick={() => onEventSelect(event)}>
-                                                <ListCollapse />
+                                                <ListCollapse className="w-3 h-3 mr-1" />
                                                 Details
                                             </Button>
                                             <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
-                                                <Edit2Icon className="w-3 h-3" />
+                                                <Edit2Icon className="w-3 h-3 mr-1" />
                                                 Edit
                                             </Button>
                                         </div>
@@ -165,21 +165,21 @@ export function EventSection({ title, events, isLoading, onEventSelect }: EventS
                             onClick={handleViewAll}
                         >
                             <span className='flex'>View All ({localEvents.length})
-                                <ArrowRight className="h-4 w-4" />
+                                <ArrowRight className="h-4 w-4 ml-1" />
                             </span>
                         </Button>
                     </div>
                 )}
-                {selectedEvent && (
-                    <EditEventDialog
-                        event={selectedEvent}
-                        onClose={handleCloseEditDialog}
-                        onSave={handleSaveUpdateEvent}
-                        isLoading={isUpdateLoading}
-                    />
-                )}
             </div>
+            {isEditDialogOpen && selectedEvent && (
+                <EditEventDialog
+                    event={selectedEvent}
+                    onClose={handleCloseEditDialog}
+                    onSave={handleSaveUpdateEvent}
+                    isLoading={isUpdateLoading}
+                />
+            )}
         </section>
-    )
+    );
 }
 

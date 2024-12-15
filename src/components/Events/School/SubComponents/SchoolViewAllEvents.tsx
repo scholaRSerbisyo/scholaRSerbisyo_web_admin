@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, Clock, Edit2Icon, ListCollapse, MapPin } from 'lucide-react';
 import { useRouter, useSearchParams } from "next/navigation";
-import { Event } from "@/components/types";
-import { EventImage } from "./EventImage";
-import { ViewAllEditEventDialog } from './ViewAllEditDialog';
-import { ViewEventDetailsDialog } from './ViewEventDetailsDialog';
+import { Event, ExtendedEvent } from "@/components/types";
+import { SchoolEventImage } from './SchoolEventImage';
+import { SchoolViewAllEditEventDialog } from './SchoolViewAllEditDialog';
+import { SchoolViewEventDetailsDialog } from './SchoolViewEventDetailsDialog';
 import { toast } from '@/hooks/use-toast';
 import { updateEvent } from '../../_actions/events';
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns';
@@ -34,11 +34,11 @@ const determineEventStatus = (event: Event): string => {
   }
 };
 
-interface ScholarViewAllEventsProps {
-    events: Event[]
+interface SchoolScholarViewAllEventsProps {
+    events: ExtendedEvent[]
 }
 
-export default function ScholarViewAllEvents({ events }: ScholarViewAllEventsProps) {
+export default function SchoolScholarViewAllEvents({ events }: SchoolScholarViewAllEventsProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -47,21 +47,24 @@ export default function ScholarViewAllEvents({ events }: ScholarViewAllEventsPro
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [localEvents, setLocalEvents] = useState<Event[]>(events);
 
+    const schoolname = searchParams.get('type') || '';
     const title = searchParams.get('title') || '';
     const status = searchParams.get('status') || '';
 
     useEffect(() => {
-      const updatedEvents = events.map(event => ({
-        ...event,
-        status: determineEventStatus(event)
-      }));
-      
-      const filteredEvents = status 
-        ? updatedEvents.filter(event => event.status === status)
-        : updatedEvents;
+        const updatedEvents = events.map(event => ({
+            ...event,
+            status: determineEventStatus(event)
+        }));
+        
+        const filteredEvents = updatedEvents.filter(event => {
+            const matchesStatus = status ? event.status === status : true;
+            const matchesSchool = schoolname ? event.school.school_name === schoolname : true;
+            return matchesStatus && matchesSchool
+        });
 
-      console.log(filteredEvents);
-      setLocalEvents(filteredEvents);
+        console.log(filteredEvents);
+        setLocalEvents(filteredEvents);
     }, [events, status]);
 
     const handleEditClick = (event: Event) => {
@@ -139,7 +142,7 @@ export default function ScholarViewAllEvents({ events }: ScholarViewAllEventsPro
                     {localEvents.map((event) => (
                         <Card key={event.event_id} className="shadow-md">
                             <CardHeader className="p-0">
-                                <EventImage event={event} title={title} />
+                                <SchoolEventImage event={event} title={title} />
                             </CardHeader>
                             <CardContent className="p-2">
                                 <CardTitle className="text-sm mb-2">{event.event_name}</CardTitle>
@@ -176,12 +179,12 @@ export default function ScholarViewAllEvents({ events }: ScholarViewAllEventsPro
                     ))}
                 </div>
             </div>
-            <ViewEventDetailsDialog
+            <SchoolViewEventDetailsDialog
                 event={selectedEvent}
                 onClose={handleCloseDetailsDialog}
                 isOpen={isDetailsDialogOpen}
             />
-            <ViewAllEditEventDialog
+            <SchoolViewAllEditEventDialog
                 event={selectedEvent}
                 onClose={handleCloseEditDialog}
                 onSave={handleSaveUpdateEvent}

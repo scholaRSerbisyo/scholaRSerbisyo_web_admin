@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Settings2Icon, Search } from 'lucide-react'
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Settings2Icon, Search, Download } from 'lucide-react'
 import { format } from 'date-fns'
 
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,8 @@ import {
 } from "@/components/ui/table"
 import { toast } from "@/hooks/use-toast"
 import { fetchCompletedSubmissions, acceptSubmission, declineSubmission } from '@/components/Events/_actions/events'
-import { ProofOverlay } from "./proof-overlay"
+import { ProofOverlay } from "../../proof-overlay"
+import { exportAttendeesData, ScholarAttendees } from '@/lib/utils/export'
 
 interface Submission {
   id: number
@@ -69,6 +70,7 @@ interface Submission {
 
 interface CheckAttendeesDialogProps {
   eventId: number
+  eventName: string
   onClose: () => void
 }
 
@@ -153,7 +155,7 @@ const columns: ColumnDef<Submission>[] = [
   },
 ]
 
-export function CheckAttendeesDialog({ eventId, onClose }: CheckAttendeesDialogProps) {
+export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAttendeesDialogProps) {
   const [submissions, setSubmissions] = React.useState<Submission[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -263,6 +265,39 @@ export function CheckAttendeesDialog({ eventId, onClose }: CheckAttendeesDialogP
     },
   })
 
+  const handleExport = React.useCallback(async (fileType: 'csv' | 'xlsx' | 'pdf') => {
+    try {
+      const exportData: ScholarAttendees[] = submissions.map(submission => ({
+        id: submission.scholar.id,
+        firstname: submission.scholar.firstname,
+        lastname: submission.scholar.lastname,
+        mobilenumber: '', // Add this if available in your data
+        age: '', // Add this if available in your data
+        yearLevel: submission.scholar.yearLevel,
+        school: {
+          name: submission.scholar.school.name || '' // Use empty string as fallback
+        },
+        barangay: {
+          name: submission.scholar.barangay.name || '' // Use empty string as fallback
+        },
+        date: submission.created_at,
+      }))
+
+      await exportAttendeesData(exportData, eventName, submissions.length, fileType)
+      toast({
+        title: "Export Successful",
+        description: `Data exported as ${fileType.toUpperCase()} successfully.`,
+      })
+    } catch (error) {
+      console.error("Export failed:", error)
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting the data. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }, [submissions, eventName])
+
   return (
     <>
       <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
@@ -270,10 +305,30 @@ export function CheckAttendeesDialog({ eventId, onClose }: CheckAttendeesDialogP
           <div className="space-y-4">
             <div className="flex justify-between items-center p-4">
               <div>
-                <h2 className="text-xl font-semibold">Check Attendees</h2>
+                <h2 className="text-xl font-semibold">Total Attendees for "{eventName}"</h2>
                 <p className="text-sm text-gray-300">List of attendees for this event.</p>
               </div>
               <div className="flex items-center space-x-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="bg-white text-black hover:bg-white hover:text-gray-500">
+                      <Download className="mr-2 h-4 w-4" />
+                      Export
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-white">
+                    <DropdownMenuItem onClick={() => handleExport('csv')} className="text-black">
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('xlsx')} className="text-black">
+                      Export as Excel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('pdf')} className="text-black">
+                      Export as PDF
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                   <Input
@@ -361,7 +416,10 @@ export function CheckAttendeesDialog({ eventId, onClose }: CheckAttendeesDialogP
 
             <div className="flex items-center justify-between text-white">
               <div className="flex-1 text-sm">
-                {table.getFilteredRowModel().rows.length} row(s) total.
+                <div className="flex gap-x-2">
+                  <p>Total Attendees:</p>
+                  <p className="text-ys font-bold">{table.getFilteredRowModel().rows.length}</p>
+                </div>
               </div>
               <div className="flex items-center space-x-6 lg:space-x-8">
                 <div className="flex items-center space-x-2">

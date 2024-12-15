@@ -19,19 +19,6 @@ import {
 import AddEventButtonComponent from "../../Static/AddEventFunction/AddEventButton"
 export const dynamic = "force-dynamic"
 
-{/*const schools: School1[] = [
-  { id: "1", name: "PHINMA - Cagayan de Oro College", totalEvents: 5 },
-  { id: "2", name: "Capital University", totalEvents: 10 },
-  { id: "3", name: "Lourdes College", totalEvents: 6 },
-  { id: "4", name: "University of Science and Technology of Southern Philippines", totalEvents: 5 },
-  { id: "5", name: "Pilgrim Christian College", totalEvents: 7 },
-  { id: "6", name: "Southern de Oro College", totalEvents: 6 },
-  { id: "7", name: "Xavier University- Ateneo de Cagayan", totalEvents: 11 },
-  { id: "8", name: "STI College", totalEvents: 10 },
-  { id: "9", name: "Liceo de Cagayan University", totalEvents: 5 },
-  { id: "10", name: "Vineyard International Polytechnic College", totalEvents: 8 },
-  { id: "11", name: "Golden Heritage Polytechnic College", totalEvents: 12 },
-]*/}
 interface BarangayProps {
   barangays: Baranggay[]
   admintype: number
@@ -50,6 +37,7 @@ export default function CommunityComponent({barangays, admintype}: BarangayProps
   const totalPages = Math.ceil(filteredBarangays.length / rowsPerPage)
   const startIndex = (currentPage - 1) * rowsPerPage
   const endIndex = startIndex + rowsPerPage
+  const currentBarangays = filteredBarangays.slice(startIndex, endIndex)
 
   const handleCreateEvent = () => {
     router.push("/events/school/create")
@@ -62,6 +50,10 @@ export default function CommunityComponent({barangays, admintype}: BarangayProps
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
   }
+
+  React.useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
 
   return (
     <div className="container mx-auto flex flex-col h-[calc(100vh-7rem)]">
@@ -78,7 +70,7 @@ export default function CommunityComponent({barangays, admintype}: BarangayProps
       <div className="relative mb-6">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search school..."
+          placeholder="Search community..."
           className="pl-8"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -95,7 +87,7 @@ export default function CommunityComponent({barangays, admintype}: BarangayProps
               </TableRow>
             </TableHeader>
             <TableBody>
-              {barangays.map((barangay) => (
+              {currentBarangays.map((barangay) => (
                 <TableRow 
                   key={barangay.baranggay_id} 
                   className="hover:bg-muted/50 cursor-pointer"

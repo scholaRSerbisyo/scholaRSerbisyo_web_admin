@@ -33,6 +33,122 @@ export const getCSOEvents = async () => {
     }
 }
 
+export const getSchoolEvents = async () => {
+  const token = cookies().get("session")?.value 
+    try {
+        const req: any = await fetch(`${API_URL}/api/events/getschoolevents`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+
+        const res = await req.json()
+
+        if(!req.ok) {
+            const message = res?.message
+            return { message }
+        }
+        else
+        {
+            return res
+        }
+    } catch (error) {
+        const message = error
+        return { message }
+    }
+}
+
+export const getCommunityEvents = async () => {
+  const token = cookies().get("session")?.value 
+    try {
+        const req: any = await fetch(`${API_URL}/api/events/getbarangayevents`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+
+        const res = await req.json()
+
+        if(!req.ok) {
+            const message = res?.message
+            return { message }
+        }
+        else
+        {
+            return res
+        }
+    } catch (error) {
+        const message = error
+        return { message }
+    }
+}
+
+export const getEvents = async () => {
+  const token = cookies().get("session")?.value 
+    try {
+        const req: any = await fetch(`${API_URL}/api/events/getevents`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+
+        const res = await req.json()
+
+        if(!req.ok) {
+            const message = res?.message
+            return { message }
+        }
+        else
+        {
+            return res
+        }
+    } catch (error) {
+        const message = error
+        return { message }
+    }
+}
+
+export const getEvent = async (event_id: number) => {
+  const token = cookies().get("session")?.value 
+    try {
+        const req: any = await fetch(`${API_URL}/api/events/getevent/${event_id}`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+
+        const res = await req.json()
+
+        if(!req.ok) {
+            const message = res?.message
+            return { message }
+        }
+        else
+        {
+            return res
+        }
+    } catch (error) {
+        const message = error
+        return { message }
+    }
+}
+
 export async function getImage(imageUuid: string) {
   const token = cookies().get("session")?.value
     try {

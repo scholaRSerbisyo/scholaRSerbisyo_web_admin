@@ -45,7 +45,7 @@ export interface Scholar {
   firstname: string;
   lastname: string;
   mobilenumber: string;
-  age: number;
+  age: string;
   yearLevel: string;
   scholarType: {
     id: number;

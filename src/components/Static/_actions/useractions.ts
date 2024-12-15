@@ -11,4 +11,3 @@ export async function fetchedUser(): Promise<User> {
       throw new Error("Unable to fetch user");
     }
   }
-  

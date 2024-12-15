@@ -48,15 +48,10 @@ export type EventResponse = {
 
 export type EventsResult = EventResponse[] | { message: string };
 
-export const getEvents = async (timezone: string = 'Asia/Manila'): Promise<EventsResult> => {
-  const token = cookies().get("session")?.value;
-
-  if (!token) {
-    return { message: "Authentication token not found" };
-  }
-
+export const getEvents = async () => {
+  const token = cookies().get('session')?.value
   try {
-    const response = await fetch(`${API_URL}/api/events/getevents`, {
+    const req = await fetch(`${API_URL}/api/events/getevents`, {
       cache: 'no-store',
       method: "GET",
       headers: {
@@ -64,53 +59,42 @@ export const getEvents = async (timezone: string = 'Asia/Manila'): Promise<Event
         "Content-Type": "application/json",
         "Accept": "application/json"
       }
-    });
+    })
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return { message: errorData.message || `HTTP error! status: ${response.status}` };
+    const res = await req.json()
+
+    if (!req.ok) {
+      const message = res?.message
+      return { message }
     }
 
-    const events: EventResponse[] = await response.json();
+    const timeZone = 'Asia/Manila'  
+    const currentDate = new Date()
+    const zonedDate = toZonedTime(currentDate, timeZone)
 
-    const currentDate = toZonedTime(new Date(), timezone);
-    const currentDateStart = startOfDay(currentDate);
+    const formattedCurrentDate = format(zonedDate, 'yyyy-MM-dd', { timeZone })
+    const currentTime = format(zonedDate, 'HH:mm', { timeZone })
 
-    const eventsWithStatus: EventResponse[] = events.map(event => {
-      const eventDate = toZonedTime(parseISO(event.date), timezone);
-      const eventDateStart = startOfDay(eventDate);
-      const eventStartTime = toZonedTime(parseISO(`${event.date}T${event.time_from}`), timezone);
-      const eventEndTime = toZonedTime(parseISO(`${event.date}T${event.time_to}`), timezone);
-
-      let status: 'ongoing' | 'upcoming' | 'previous';
-
-      if (isBefore(eventDateStart, currentDateStart)) {
-        status = 'previous';
-      } else if (isEqual(eventDateStart, currentDateStart)) {
-        if (isBefore(currentDate, eventStartTime)) {
-          status = 'upcoming';
-        } else if (isBefore(currentDate, eventEndTime)) {
-          status = 'ongoing';
+    const eventsWithStatus = (res as EventResponse[]).map(event => {
+      if (event.date < formattedCurrentDate) {
+        event.status = 'previous';
+      } else if (event.date === formattedCurrentDate) {
+        if (currentTime >= event.time_from && currentTime <= event.time_to) {
+          event.status = 'ongoing';
+        } else if (currentTime < event.time_from) {
+          event.status = 'upcoming';
         } else {
-          status = 'previous';
+          event.status = 'previous';
         }
       } else {
-        status = 'upcoming';
+        event.status = 'upcoming';
       }
-
-      return { 
-        ...event, 
-        status,
-        date: format(eventDate, 'yyyy-MM-dd', { timeZone: timezone }),
-        time_from: format(eventStartTime, 'HH:mm', { timeZone: timezone }),
-        time_to: format(eventEndTime, 'HH:mm', { timeZone: timezone })
-      };
+      return event;
     });
 
     return eventsWithStatus;
   } catch (error) {
-    console.error('Error fetching events:', error);
-    return { message: 'An unexpected error occurred while fetching events' };
+    return { message: error }
   }
 }
 

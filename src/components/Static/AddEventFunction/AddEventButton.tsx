@@ -202,43 +202,60 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
         image: image
       };
   
-      const response: any = await addEvent(data);
-      console.log(response)
-      router.refresh();
+      const [message, status, eventId] = await addEvent(data)
       
-      if (response[1] !== 201) {
+      if (status !== 201) {
         toast({
           title: 'Error',
-          description: response[0],
+          description: message,
           variant: 'destructive',
         });
       } else {
         toast({
           title: 'Event Added Successfully',
-          description: response[0],
+          description: message,
         });
-        closeDialog();
   
         // Send push notification
         try {
-          const eventType = eventTypes.find(et => et.event_type_id === values.event_type_id);
-          await sendPushNotification({
-            title: 'New Event Added',
-            body: `A new event "${data.event_name}" has been added.`,
-            data: {
-              eventId: response[0].event_id,
-              eventName: data.event_name,
-              eventType: eventType ? eventType.name : 'Unknown',
-              description: data.description,
-              date: data.date,
-              timeFrom: data.time_from,
-              timeTo: data.time_to,
-            },
-          });
-          console.log('Push notification sent successfully');
+          const eventType = eventTypes.find(et => et.event_type_id === values.event_type_id)
+          const notificationData = {
+            event_id: eventId,
+            event_name: values.event_name,
+            event_type_name: eventType ? eventType.name : 'Unknown',
+            description: values.description,
+            date: values.date,
+            time_from: values.time_from,
+            time_to: values.time_to,
+            event_image_uuid: image_uuid,
+          }
+          
+          console.log('Sending notification with data:', notificationData)
+          
+          const notificationResult = await sendPushNotification(notificationData)
+          
+          console.log('Push notification result:', notificationResult)
+          
+          if (notificationResult.success) {
+            console.log('Push notification sent successfully')
+            toast({
+              title: "Success",
+              description: "Event created and notification sent successfully.",
+              variant: "default",
+            })
+          } else {
+            throw new Error(notificationResult.message || 'Unknown error occurred while sending notification')
+          }
         } catch (error) {
-          console.error('Failed to send push notification:', error);
+          console.error('Failed to send push notification:', error)
+          toast({
+            title: "Warning",
+            description: "Event created successfully, but there was an issue sending notifications. Please check the server logs for more details.",
+          })
         }
+
+        window.location.reload();
+        setIsDialogOpen(false)
       }
     } catch (error) {
       setError("Failed to upload the event data.");
@@ -537,3 +554,4 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
     </>
   );
 }
+

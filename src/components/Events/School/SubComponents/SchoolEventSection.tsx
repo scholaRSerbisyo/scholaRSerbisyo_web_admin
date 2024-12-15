@@ -4,23 +4,23 @@ import { Button } from "@/components/ui/button"
 import { ChevronRight, Edit2Icon, Calendar, Clock, MapPin, ListCollapse, ArrowRight } from 'lucide-react'
 import { EventImage } from "@/components/Events/CSO/SubComponents/EventImage"
 import { Event } from "@/components/types"
-import { SchoolEditEventDialog } from './EditEventDialog'
+import { SchoolEditEventDialog } from './SchoolEditEventDialog'
 import { useTheme } from 'next-themes'
 import { updateEvent } from '../../_actions/events'
 import { toast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
 import { SchoolEventImage } from './SchoolEventImage'
-import { useSidebar } from '@/components/ui/sidebar'
 
 interface SchoolEventSectionProps {
+    schoolname: string
   title: string
   events: Event[]
   isLoading: boolean
   onEventSelect: (event: Event) => void
 }
 
-export function SchoolEventSection({ title, events, isLoading, onEventSelect }: SchoolEventSectionProps) {
+export function SchoolEventSection({ schoolname, title, events, isLoading, onEventSelect }: SchoolEventSectionProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -28,10 +28,8 @@ export function SchoolEventSection({ title, events, isLoading, onEventSelect }: 
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [localEvents, setLocalEvents] = useState<Event[]>(events);
 
-    const { state: sidebarState } = useSidebar()
-
     const handleViewAll = () => {
-        router.push(`/events/cso/viewevents?title=${encodeURIComponent(title)}&status=${encodeURIComponent(events[0].status)}`);
+        router.push(`/events/school/viewevents?type=${encodeURIComponent(schoolname)}&title=${encodeURIComponent(title)}&status=${encodeURIComponent(events[0].status)}`);
     }
 
     const handleEditClick = (event: Event) => {
@@ -98,9 +96,7 @@ export function SchoolEventSection({ title, events, isLoading, onEventSelect }: 
     };
 
     return (
-        <section className={`space-y-4 border rounded-lg ${theme == 'light' ? 'border-gray-300' : ''} ${
-            sidebarState === 'collapsed' ? 'w-[62.4rem] transition-all duration-200 delay-100 ease-in-out' : 'w-[49.4rem]'
-          } overflow-hidden`}>
+        <section className={`space-y-4 border rounded-lg ${theme == 'light' ? 'border-gray-300' : ''} w-[55vw] overflow-hidden`}>
             <div className={`bg-[#191851] text-primary-foreground p-3 rounded-t-lg`}>
                 <h2 className="text-lg font-semibold text-white text-center">{title}</h2>
             </div>

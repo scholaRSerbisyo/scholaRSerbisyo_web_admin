@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronRight, Edit2Icon, Calendar, Clock, MapPin, ListCollapse, ArrowRight } from 'lucide-react'
 import { EventImage } from "@/components/Events/CSO/SubComponents/EventImage"
 import { Event } from "@/components/types"
-import { CommunityEditEventDialog } from './EditEventDialog'
+import { CommunityEditEventDialog } from './CommunityEditEventDialog'
 import { useTheme } from 'next-themes'
 import { updateEvent } from '../../_actions/events'
 import { toast } from '@/hooks/use-toast'
@@ -14,13 +14,14 @@ import { CommunityEventImage } from './CommunityEventImage'
 import { useSidebar } from '@/components/ui/sidebar'
 
 interface CommunityEventSectionProps {
+    barangayname: string
   title: string
   events: Event[]
   isLoading: boolean
   onEventSelect: (event: Event) => void
 }
 
-export function CommunityEventSection({ title, events, isLoading, onEventSelect }: CommunityEventSectionProps) {
+export function CommunityEventSection({ barangayname, title, events, isLoading, onEventSelect }: CommunityEventSectionProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -31,7 +32,7 @@ export function CommunityEventSection({ title, events, isLoading, onEventSelect 
     const { state: sidebarState } = useSidebar();
 
     const handleViewAll = () => {
-        router.push(`/events/cso/viewevents?title=${encodeURIComponent(title)}&status=${encodeURIComponent(events[0].status)}`);
+        router.push(`/events/community/viewevents?type=${encodeURIComponent(barangayname)}&title=${encodeURIComponent(title)}&status=${encodeURIComponent(events[0].status)}`);
     }
 
     const handleEditClick = (event: Event) => {

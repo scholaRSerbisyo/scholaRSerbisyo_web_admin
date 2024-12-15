@@ -1,8 +1,8 @@
 import { getBaranggay } from "@/components/Events/_actions/barangays";
 import { cookies } from "next/headers"; // To fetch the token
 import { Baranggay2 } from "@/components/types";
-import SchoolEvent from "@/components/Events/School/SubComponents/SchoolEvent";
 import { fetchedUser } from "@/components/Static/_actions/useractions";
+import CommunityEvent from "@/components/Events/Community/SubComponents/CommunityEvent";
 
 interface CommunityPageProps {
   params: { id: string };
@@ -16,8 +16,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
     // Fetch the school details with the token
     const baranggay: Baranggay2 = await getBaranggay(id);
     const admintype = await fetchedUser();
-
-    console.log(baranggay)
+    
     if (!baranggay) {
       return (
         <div>
@@ -29,7 +28,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
     return (
       <div>
-        <SchoolEvent type={baranggay.baranggay.baranggay_name} events={baranggay.events} admintype={admintype.admin.admin_type_id}/>
+        <CommunityEvent type={baranggay.baranggay.baranggay_name} events={baranggay.events} admintype={admintype.admin.admin_type_id}/>
         {/* Add components or layout for the specific school's details */}
       </div>
     );

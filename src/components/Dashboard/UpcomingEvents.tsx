@@ -81,7 +81,7 @@ export function UpcomingEventsComponents({ className, ...props }: CardProps) {
               </div>
             </div>
           ))}
-          {!upcomingEvents?<></>:<p className='text-center'>No Upcoming Events...</p>}
+          {upcomingEvents.length == 0?<p className='text-center'>No Upcoming Events...</p>:<></>}
         </div>
       </CardContent>
       <CardFooter className='mt-5'>

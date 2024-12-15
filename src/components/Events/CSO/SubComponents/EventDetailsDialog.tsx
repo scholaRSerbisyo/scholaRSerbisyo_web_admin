@@ -61,7 +61,7 @@ export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) 
                 title: "Event Updated",
                 description: "The event has been successfully updated.",
             });
-
+            window.location.reload()
             setIsEditDialogOpen(false);
         } catch (error) {
             console.error('Error updating event:', error);
@@ -76,7 +76,7 @@ export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) 
     };
 
     if (showAttendees) {
-        return <CheckAttendeesDialog eventId={localEvent.event_id} onClose={() => setShowAttendees(false)} />
+        return <CheckAttendeesDialog eventId={localEvent.event_id} eventName={localEvent.event_name} onClose={() => setShowAttendees(false)} />
     }
 
     return (

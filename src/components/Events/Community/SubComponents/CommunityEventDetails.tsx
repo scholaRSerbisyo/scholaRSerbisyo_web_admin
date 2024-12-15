@@ -76,7 +76,7 @@ export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDe
     };
 
     if (showAttendees) {
-        return <CheckAttendeesDialog eventId={localEvent.event_id} onClose={() => setShowAttendees(false)} />
+        return <CheckAttendeesDialog eventId={localEvent.event_id} eventName={localEvent.event_name} onClose={() => setShowAttendees(false)} />
     }
 
     return (

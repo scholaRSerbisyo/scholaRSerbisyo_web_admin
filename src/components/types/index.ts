@@ -21,6 +21,23 @@ export interface Event {
   updated_at: string
   image?: string
   imageUrl?: string
+  imagePreview?: string | null;
+}
+
+interface Schools {
+  school_id: number
+  school_name: string
+}
+
+interface Barangays {
+  baranggay_id: number
+  baranggay_name: string
+}
+
+// Extended Event interface
+export interface ExtendedEvent extends Event {
+  school: Schools
+  barangay: Barangays
 }
 
 export interface Attendee {

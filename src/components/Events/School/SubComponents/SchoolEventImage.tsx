@@ -49,7 +49,7 @@ export function SchoolEventImage({ event, title }: { event: Event, title: string
         alt={event.event_name || "Event Image"} 
         width={200} 
         height={100} 
-        className={`w-full h-24 object-cover ${headerColorClass} rounded-t-lg`}
+        className={`w-full h-24 object-cover ${headerColorClass}`}
         onError={() => {
             console.error(`Failed to load image: ${imageUrl}`);
             setImageUrl("");  // Reset the URL to trigger a retry

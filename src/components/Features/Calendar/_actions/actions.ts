@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 import API_URL from "@/constants/constants"
+import { format, toZonedTime } from 'date-fns-tz'
 
 const token = cookies().get("session")?.value
 
@@ -63,9 +64,12 @@ export const getEvents = async () => {
       return { message }
     }
 
-    const currentDate = new Date();
-    const formattedCurrentDate = currentDate.toISOString().split('T')[0];
-    const currentTime = currentDate.toTimeString().split(' ')[0].slice(0, 5);
+    const timeZone = 'Asia/Manila'  
+    const currentDate = new Date()
+    const zonedDate = toZonedTime(currentDate, timeZone)
+
+    const formattedCurrentDate = format(zonedDate, 'yyyy-MM-dd', { timeZone })
+    const currentTime = format(zonedDate, 'HH:mm', { timeZone })
 
     const eventsWithStatus = (res as EventResponse[]).map(event => {
       if (event.date < formattedCurrentDate) {
@@ -73,7 +77,7 @@ export const getEvents = async () => {
       } else if (event.date === formattedCurrentDate) {
         if (currentTime >= event.time_from && currentTime <= event.time_to) {
           event.status = 'ongoing';
-        } else if (currentTime > event.time_to) {
+        } else if (currentTime < event.time_from) {
           event.status = 'upcoming';
         } else {
           event.status = 'previous';

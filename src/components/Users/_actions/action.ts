@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
+import { Baranggay, School } from "@/components/types";
 
 const token = cookies().get("session")?.value;
 
@@ -93,3 +94,87 @@ export const getScholarEvents = async (scholarId: number) => {
           return null;
       }
   }
+
+  export const updateScholarInfo = async (scholarId: number, scholarData: any) => {
+    try {
+        const response = await fetch(`${API_URL}/api/user/admin/scholar/${scholarId}/update`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(scholarData)
+        });
+
+        const data = await response.json();
+
+        console.error(data)
+
+        if (!response.ok) {
+            const message = data?.message || 'An error occurred while updating scholar information';
+            return { error: message };
+        }
+
+        return {
+            scholar: data.scholar
+        };
+    } catch (error) {
+        console.error('Error updating scholar information:', error);
+        return { error: 'An unexpected error occurred while updating scholar information' };
+    }
+}
+
+export const getSchools = async () => {
+    const token = cookies().get("session")?.value
+    try {
+        const req = await fetch(`${API_URL}/api/school/getschools`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        const res = await req.json();
+
+        if (!req.ok) {
+            const message = res?.message || "Failed to fetch schools";
+            return { message };
+        }
+
+        return res as School[];
+    } catch (error: any) {
+        console.error("Error fetching schools:", error);
+        return { message: error.message || "An error occurred" };
+    }
+};
+
+export const getBaranggays = async () => { 
+    const token = cookies().get('session')?.value
+    try {
+        const req = await fetch(`${API_URL}/api/baranggay/getbaranggays`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        const res = await req.json();
+
+        if (!req.ok) {
+            const message = res?.message || "Failed to fetch barangay";
+            return { message };
+        }
+
+        return res as Baranggay[];
+    } catch (error: any) {
+        console.error("Error fetching barangays:", error);
+        return { message: error.message || "An error occurred" };
+    }
+};

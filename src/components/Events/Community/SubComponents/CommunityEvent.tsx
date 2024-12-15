@@ -61,18 +61,21 @@ export default function CommunityEvent({type, events, admintype}: CommunityEvent
         <div className={`space-y-5 border-2 rounded-lg p-3 ${theme == 'light'?'bg-gray-100':''}`}>
           <p className="font-bold text-lg">Registered Events</p>
           <CommunityEventSection 
+            barangayname={type}
             title="Ongoing Events" 
             events={ongoingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
           <CommunityEventSection 
+            barangayname={type}
             title="Upcoming Events" 
             events={upcomingEvents}
             isLoading={isLoading}
             onEventSelect={setSelectedEvent}
           />
           <CommunityEventSection 
+            barangayname={type}
             title="Previous Events" 
             events={previousEvents}
             isLoading={isLoading}

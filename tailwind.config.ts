@@ -13,7 +13,7 @@ const config: Config = {
 			landingbg: "url('/landing_background.png')",
 		},
   		colors: {
-  			ys: '#FDB316',
+  			ys: '#F3BC00',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
