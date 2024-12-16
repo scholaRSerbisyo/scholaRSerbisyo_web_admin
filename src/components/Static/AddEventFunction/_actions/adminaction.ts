@@ -6,9 +6,12 @@ import { getUser } from "@/auth/user";
 
 const token = cookies().get("session")?.value
 
+
 export const getEventTypes = async () => {
+    const token = cookies().get("session")?.value;
+
     try {
-        const req: any = await fetch(`${API_URL}/api/events/geteventtypes`, {
+        const response = await fetch(`${API_URL}/api/events/geteventtypes`, {
             cache: 'no-store',
             method: "GET",
             headers: {
@@ -16,25 +19,20 @@ export const getEventTypes = async () => {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             }
-        })
+        });
 
-        const res = await req.json()
-
-        if(!req.ok) {
-            const message = res?.message
-
-            return { message }
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error fetching event types:', errorData.message);
+            return [];
         }
-        else
-        {
-            const data = res
 
-            return data
-        }
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+
     } catch (error) {
-        const message = error
-
-        return { message }
+        console.error('Error fetching event types:', error);
+        return [];
     }
 }
 

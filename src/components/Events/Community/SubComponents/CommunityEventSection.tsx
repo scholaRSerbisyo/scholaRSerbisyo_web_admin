@@ -140,8 +140,8 @@ export function CommunityEventSection({ barangayname, admintype, title, events, 
                                                 <span className="line-clamp-1">{event.location}</span>
                                             </p>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <Button size="sm" variant="secondary" className="text-xs bg-[#191851] text-white hover:bg-blue-800" onClick={() => onEventSelect(event)}>
+                                        <div className={`flex ${admintype !== 2?'justify-between':'justify-center'}`}>
+                                            <Button size="sm" variant="secondary" className={`text-xs bg-[#191851] text-white hover:bg-blue-800 ${admintype !== 2?'':'w-full'}`} onClick={() => onEventSelect(event)}>
                                                 <ListCollapse />
                                                 Details
                                             </Button>

@@ -130,34 +130,34 @@ export default function CalendarEvents() {
       <div className="flex flex-col space-y-2">
         <h3 className="text-sm font-medium">Categories</h3>
         <div className="flex gap-2 justify-center">
-          <div className="bg-[#F3BC00] text-xs px-4 py-1 rounded-full">Previous</div>
-          <div className="bg-[#4ADE80] text-xs px-4 py-1 rounded-full">Ongoing</div>
-          <div className="bg-[#304295] text-xs px-4 py-1 rounded-full">Upcoming</div>
+          <div className="bg-[#F3BC00] text-xs text-white px-4 py-1 rounded-full">Previous</div>
+          <div className="bg-[#4ADE80] text-xs text-white px-4 py-1 rounded-full">Ongoing</div>
+          <div className="bg-[#304295] text-xs text-white px-4 py-1 rounded-full">Upcoming</div>
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="max-h-[80vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>Events for {selectedEvents.length > 0 ? format(parseISO(selectedEvents[0].date), 'MMMM d, yyyy') : ''}</DialogTitle>
-            <DialogDescription>
-              {selectedEvents.map((event, index) => (
-                <div key={index} className="space-y-2 mt-4 pb-4 border-b last:border-b-0">
-                  <h3 className="font-semibold">{event.event_name}</h3>
-                  <p><strong>Time:</strong> {event.time_from} - {event.time_to}</p>
-                  <p><strong>Location:</strong> {event.location}</p>
-                  <p><strong>Description:</strong> {event.description}</p>
-                  <p><strong>Status:</strong> {event.status}</p>
-                  {event.school && (
-                    <p><strong>School:</strong> {event.school.school_name}</p>
-                  )}
-                  {event.barangay && (
-                    <p><strong>Barangay:</strong> {event.barangay.baranggay_name}</p>
-                  )}
-                </div>
-              ))}
-            </DialogDescription>
           </DialogHeader>
+          <DialogDescription className="overflow-y-auto flex-grow">
+            {selectedEvents.map((event, index) => (
+              <div key={index} className="space-y-2 mt-4 pb-4 border-b last:border-b-0">
+                <h3 className="font-semibold">{event.event_name}</h3>
+                <p><strong>Time:</strong> {event.time_from} - {event.time_to}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+                <p><strong>Description:</strong> {event.description}</p>
+                <p><strong>Status:</strong> {event.status}</p>
+                {event.school && (
+                  <p><strong>School:</strong> {event.school.school_name}</p>
+                )}
+                {event.barangay && (
+                  <p><strong>Barangay:</strong> {event.barangay.baranggay_name}</p>
+                )}
+              </div>
+            ))}
+          </DialogDescription>
         </DialogContent>
       </Dialog>
     </div>

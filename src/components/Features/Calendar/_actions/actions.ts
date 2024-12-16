@@ -4,8 +4,6 @@ import { cookies } from "next/headers"
 import API_URL from "@/constants/constants"
 import { format, toZonedTime } from 'date-fns-tz'
 
-const token = cookies().get("session")?.value
-
 export type School = {
   school_id: number;
   school_name: string;
@@ -46,6 +44,7 @@ export type EventResponse = {
 }
 
 export const getEvents = async () => {
+  const token = cookies().get("session")?.value
   try {
     const req = await fetch(`${API_URL}/api/events/getevents`, {
       cache: 'no-store',

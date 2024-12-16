@@ -35,10 +35,11 @@ const determineEventStatus = (event: Event): string => {
 };
 
 interface CommunityScholarViewAllEventsProps {
+    admintype: number
     events: ExtendedEvent[]
 }
 
-export default function CommunityScholarViewAllEvents({ events }: CommunityScholarViewAllEventsProps) {
+export default function CommunityScholarViewAllEvents({ admintype, events }: CommunityScholarViewAllEventsProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -164,15 +165,19 @@ export default function CommunityScholarViewAllEvents({ events }: CommunitySchol
                                         {event.location}
                                     </p>
                                 </div>
-                                <div className="flex justify-between">
-                                    <Button size="sm" variant="secondary" className="text-xs bg-[#191851] text-white hover:bg-blue-800" onClick={() => handleDetailsClick(event)}>
+                                <div className={`flex ${admintype !== 2?'justify-between':'justify-center'}`}>
+                                    <Button size="sm" variant="secondary" className={`text-xs bg-[#191851] text-white hover:bg-blue-800 ${admintype !== 2?'':'w-full'}`} onClick={() => handleDetailsClick(event)}>
                                         <ListCollapse />
                                         Details
                                     </Button>
-                                    <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
-                                        <Edit2Icon className="w-3 h-3" />
-                                        Edit
-                                    </Button>
+                                    {admintype !== 2?
+                                        <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
+                                            <Edit2Icon className="w-3 h-3" />
+                                            Edit
+                                        </Button>
+                                        :
+                                        <></>
+                                    }
                                 </div>
                             </CardContent>
                         </Card>

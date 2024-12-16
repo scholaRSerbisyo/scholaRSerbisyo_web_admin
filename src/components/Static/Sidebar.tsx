@@ -316,16 +316,38 @@ export default function SidebarComponent({
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <Button
-                      className="flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
-                      onClick={() => setIsFAQOpen(true)}
-                    >
-                      <QuestionMarkCircledIcon className="h-4 w-4" />
-                      FAQs
-                    </Button>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
+                  {admintype === 1?
+                    <>
+                      <DropdownMenuGroup>
+                        <Button
+                          className="flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
+                          onClick={() => setIsFAQOpen(true)}
+                        >
+                          <QuestionMarkCircledIcon className="h-4 w-4" />
+                          FAQs
+                        </Button>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                    </>
+                    :
+                    <></>
+                  }
+                  {admintype === 2?
+                    <>
+                      <DropdownMenuGroup>
+                        <Button
+                          className="flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
+                          onClick={() => setIsFAQOpen(true)}
+                        >
+                          <QuestionMarkCircledIcon className="h-4 w-4" />
+                          FAQs
+                        </Button>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                    </>
+                    :
+                    <></>
+                  }
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out

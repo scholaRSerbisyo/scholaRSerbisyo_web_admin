@@ -159,11 +159,14 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
           getSchools(),
           getBaranggays()
         ]);
-        setEventTypes(eventTypesData);
-        setSchools(schoolsData);
-        setBaranggays(baranggaysData);
+        setEventTypes(eventTypesData || []);
+        setSchools(schoolsData || []);
+        setBaranggays(baranggaysData || []);
       } catch (error) {
         console.error("Error fetching data!", error);
+        setEventTypes([]);
+        setSchools([]);
+        setBaranggays([]);
       } finally {
         setIsLoading(false);
       }
@@ -402,7 +405,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-
                 {admintype === 1 ? (
                   <FormField
                     control={form.control}
@@ -442,9 +444,7 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
                   <FormItem>
                     <FormLabel>Event Type</FormLabel>
                     <Input 
-                      value={eventTypes.find(
-                        (type) => type.event_type_id === fixedEventType
-                      )?.name || ''} 
+                      value={eventTypes.find((type) => type.event_type_id === fixedEventType)?.name || 'Unknown'}
                       disabled 
                       className="bg-muted"
                     />

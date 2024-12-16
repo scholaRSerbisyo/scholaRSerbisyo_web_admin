@@ -36,32 +36,37 @@ export const getScholarEvents = async (scholarId: number) => {
   }
   
   export const getScholars = async () => {
-      try {
-          const response = await fetch(`${API_URL}/api/events/scholars/return-service-count`, {
-              cache: 'no-store',
-              method: "GET",
-              headers: {
-                  "Authorization": `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-              }
-          });
-  
-          const data = await response.json();
-  
-          if (!response.ok) {
-              const message = data?.message || 'An error occurred while fetching scholars';
-              return { error: message };
-          }
-  
-          return {
-              scholars: data.scholars,
-              total: data.total
-          };
-      } catch (error) {
-          console.error('Error fetching scholars:', error);
-          return { error: 'An unexpected error occurred' };
-      }
+    try {
+        const token = cookies().get('session')?.value
+        const response = await fetch(`${API_URL}/api/events/scholars/return-service-count`, {
+            cache: 'no-store',
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const message = data?.message || 'An error occurred while fetching scholars';
+            throw new Error(message);
+        }
+
+        if (!data.scholars || !Array.isArray(data.scholars)) {
+            throw new Error('Invalid data structure received from the server');
+        }
+
+        return {
+            scholars: data.scholars,
+            total: data.total || 0
+        };
+    } catch (error) {
+        console.error('Error fetching scholars:', error);
+        throw error; // Re-throw the error to be handled by the calling component
+    }
   }
   
   export async function getImage(imageUuid: string) {

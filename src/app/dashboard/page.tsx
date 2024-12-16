@@ -8,11 +8,6 @@ export default async function DashboardPage() {
     const type: User = await fetchedUser()
 
     const result = await getScholars()
-  
-    if ('error' in result) {
-        // Handle the error case
-        return <div>Error: {result.error}</div>
-    }
 
     const scholars: Scholar[] = result.scholars
     return (
