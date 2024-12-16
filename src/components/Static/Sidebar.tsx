@@ -41,6 +41,7 @@ import Link from "next/link";
 import { signOut } from "@/auth/auth";
 import { Button } from "../ui/button";
 import { FAQDialog } from "../FAQs/FAQDialog";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 
 interface NavSubItem {
   title: string;
@@ -122,6 +123,8 @@ export default function SidebarComponent({
           icon: Calendar,
           items: [
             { title: "CSO", path: "/events/cso" },
+            { title: "School", path: "/events/school" },
+            { title: "Community", path: "/events/community" },
           ],
         },
         returnServiceItem,
@@ -315,11 +318,11 @@ export default function SidebarComponent({
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <Button
-                      className="flex items-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
+                      className="flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
                       onClick={() => setIsFAQOpen(true)}
                     >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      <QuestionMarkCircledIcon className="h-4 w-4" />
+                      FAQs
                     </Button>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />

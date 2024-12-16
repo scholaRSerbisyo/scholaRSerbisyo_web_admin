@@ -128,14 +128,14 @@ export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) 
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
                                     <span className={`text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>from</span>
-                                    <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm">
+                                    <div className={`border border-gray-700 rounded px-3 py-1 text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                         {localEvent.time_from}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
                                     <span className={`text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>to</span>
-                                    <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm">
+                                    <div className={`border border-gray-700 rounded px-3 py-1 text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                         {localEvent.time_to}
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@ export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) 
                             <h3 className={`font-medium mb-2 ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>Date</h3>
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4" />
-                                <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm w-fit">
+                                <div className={`border border-gray-700 rounded px-3 py-1 text-sm w-fit ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                     {localEvent.date}
                                 </div>
                             </div>
@@ -156,7 +156,7 @@ export function EventDetailsDialog({ event, onClose }: EventDetailsDialogProps) 
                             <h3 className={`font-medium mb-2 ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>Location</h3>
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-4 h-4" />
-                                <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm w-fit">
+                                <div className={`border border-gray-700 rounded px-3 py-1 text-sm w-fit ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                     {localEvent.location}
                                 </div>
                             </div>

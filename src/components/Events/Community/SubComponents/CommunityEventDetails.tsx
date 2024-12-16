@@ -13,11 +13,12 @@ import { Calendar, Clock, MapPin, Edit2Icon } from 'lucide-react'
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
 
 interface CommunityEventDetailsDialogProps {
+    admintype: number
     event: Event
     onClose: () => void
 }
 
-export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDetailsDialogProps) {
+export function CommunityEventDetailsDialog({ admintype, event, onClose }: CommunityEventDetailsDialogProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [showAttendees, setShowAttendees] = useState(false)
@@ -115,7 +116,6 @@ export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDe
                         )}
                     </div>
 
-                    {/* Right column - Event Details */}
                     <div className="space-y-6">
                         <div>
                             <h3 className={`font-medium mb-2 ${theme === 'light' ? 'text-black' : ''}`}>Event Description</h3>
@@ -128,14 +128,14 @@ export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDe
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
                                     <span className={`text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>from</span>
-                                    <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm">
+                                    <div className={`border border-gray-700 rounded px-3 py-1 text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                         {localEvent.time_from}
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Clock className="w-4 h-4" />
                                     <span className={`text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>to</span>
-                                    <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm">
+                                    <div className={`border border-gray-700 rounded px-3 py-1 text-sm ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                         {localEvent.time_to}
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@ export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDe
                             <h3 className={`font-medium mb-2 ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>Date</h3>
                             <div className="flex items-center gap-2">
                                 <Calendar className="w-4 h-4" />
-                                <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm w-fit">
+                                <div className={`border border-gray-700 rounded px-3 py-1 text-sm w-fit ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                     {localEvent.date}
                                 </div>
                             </div>
@@ -156,28 +156,32 @@ export function CommunityEventDetailsDialog({ event, onClose }: CommunityEventDe
                             <h3 className={`font-medium mb-2 ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>Location</h3>
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-4 h-4" />
-                                <div className="border border-gray-700 bg-gray-800 rounded px-3 py-1 text-sm w-fit">
+                                <div className={`border border-gray-700 rounded px-3 py-1 text-sm w-fit ${theme === 'light' ? 'text-black' : 'text-gray-300'}`}>
                                     {localEvent.location}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-4">
-                            <Button 
-                                className="bg-yellow-400 hover:bg-yellow-500 text-black"
-                                onClick={() => setShowAttendees(true)}
-                            >
-                                Check Attendees
-                            </Button>
-                            <Button 
-                                variant="outline" 
-                                className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
-                                onClick={() => setIsEditDialogOpen(true)}
-                            >
-                                <Edit2Icon className="w-4 h-4 mr-2" />
-                                Edit Event
-                            </Button>
-                        </div>
+                        {admintype !== 2?
+                            <div className="flex gap-4 pt-4">
+                                <Button 
+                                    className="bg-yellow-400 hover:bg-yellow-500 text-black"
+                                    onClick={() => setShowAttendees(true)}
+                                >
+                                    Check Attendees
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
+                                    onClick={() => setIsEditDialogOpen(true)}
+                                >
+                                    <Edit2Icon className="w-4 h-4 mr-2" />
+                                    Edit Event
+                                </Button>
+                            </div>
+                            :
+                            <></>
+                        }
                     </div>
                 </div>
             </DialogContent>

@@ -6,10 +6,9 @@ import { fetchedUser } from "@/components/Static/_actions/useractions";
 
 interface SchoolPageProps {
   params: { id: string };
-  admintype: number
 }
 
-export default async function SchoolPage({ params, admintype }: SchoolPageProps) {
+export default async function SchoolPage({ params }: SchoolPageProps) {
   const { id } = params;
 
   try {

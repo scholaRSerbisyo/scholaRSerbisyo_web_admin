@@ -55,12 +55,17 @@ export default function CommunityEvent({type, events, admintype}: CommunityEvent
     <main className="flex min-h-screen flex-col gap-6 p-4 md:p-2">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{type}</h1>
-        <AddEventButtonComponent admintype={admintype} />
+        {admintype !== 2?
+          <AddEventButtonComponent admintype={admintype} />
+          :
+          <></>
+        }
       </header>
       <div className="grid gap-6 md:grid-cols-[1fr,220px]">
         <div className={`space-y-5 border-2 rounded-lg p-3 ${theme == 'light'?'bg-gray-100':''}`}>
           <p className="font-bold text-lg">Registered Events</p>
           <CommunityEventSection 
+            admintype={admintype}
             barangayname={type}
             title="Ongoing Events" 
             events={ongoingEvents}
@@ -68,6 +73,7 @@ export default function CommunityEvent({type, events, admintype}: CommunityEvent
             onEventSelect={setSelectedEvent}
           />
           <CommunityEventSection 
+            admintype={admintype}
             barangayname={type}
             title="Upcoming Events" 
             events={upcomingEvents}
@@ -75,6 +81,7 @@ export default function CommunityEvent({type, events, admintype}: CommunityEvent
             onEventSelect={setSelectedEvent}
           />
           <CommunityEventSection 
+            admintype={admintype}
             barangayname={type}
             title="Previous Events" 
             events={previousEvents}
@@ -112,7 +119,7 @@ export default function CommunityEvent({type, events, admintype}: CommunityEvent
         </aside>
       </div>
       {selectedEvent && (
-        <CommunityEventDetailsDialog event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+        <CommunityEventDetailsDialog admintype={admintype} event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
     </main>
   )

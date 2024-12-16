@@ -14,13 +14,14 @@ import { SchoolEventImage } from './SchoolEventImage'
 
 interface SchoolEventSectionProps {
     schoolname: string
+    admintype: number
   title: string
   events: Event[]
   isLoading: boolean
   onEventSelect: (event: Event) => void
 }
 
-export function SchoolEventSection({ schoolname, title, events, isLoading, onEventSelect }: SchoolEventSectionProps) {
+export function SchoolEventSection({ schoolname, admintype, title, events, isLoading, onEventSelect }: SchoolEventSectionProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -139,10 +140,14 @@ export function SchoolEventSection({ schoolname, title, events, isLoading, onEve
                                                 <ListCollapse />
                                                 Details
                                             </Button>
-                                            <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
-                                                <Edit2Icon className="w-3 h-3" />
-                                                Edit
-                                            </Button>
+                                            {admintype !==2?
+                                                <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
+                                                    <Edit2Icon className="w-3 h-3" />
+                                                    Edit
+                                                </Button>
+                                                :
+                                                <></>
+                                            }
                                         </div>
                                     </CardContent>
                                 </Card>

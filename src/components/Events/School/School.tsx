@@ -66,7 +66,11 @@ export default function SchoolComponent({schools, admintype}: SchoolProps) {
             List of schools in Cagayan De Oro City
           </p>
         </div>
-        <AddEventButtonComponent admintype={admintype} />
+        {admintype !== 2?
+          <AddEventButtonComponent admintype={admintype} />
+          :
+          <></>
+        }
       </div>
       
       <div className="relative mb-6">

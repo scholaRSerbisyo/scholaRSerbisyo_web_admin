@@ -64,7 +64,11 @@ export default function CommunityComponent({barangays, admintype}: BarangayProps
             List of barangays in Cagayan De Oro City
           </p>
         </div>
-        <AddEventButtonComponent admintype={admintype} />
+        {admintype !== 2?
+          <AddEventButtonComponent admintype={admintype} />
+          :
+          <></>
+        }
       </div>
       
       <div className="relative mb-6">

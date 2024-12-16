@@ -56,7 +56,6 @@ const formSchema = z.object({
   time_from: z.string().min(1, "Start time is required"),
   time_to: z.string().min(1, "End time is required"),
   location: z.string().min(1, "Location is required").max(50),
-  admin_id: z.number().min(1, "Organizer is required"),
   event_type_id: z.number().min(1, "Event type is required"),
   school_id: z.number().optional(),
   baranggay_id: z.number().optional(),
@@ -94,7 +93,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
       time_from: "",
       time_to: "",
       location: "",
-      admin_id: 1,
       event_type_id: undefined,
       school_id: undefined,
       baranggay_id: undefined,
@@ -194,7 +192,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
         time_from: values.time_from,
         time_to: values.time_to,
         location: values.location,
-        admin_id: 1,
         event_type_id: values.event_type_id,
         school_id: values.school_id,
         status: 'ongoing',
@@ -269,7 +266,6 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
         time_from: "",
         time_to: "",
         location: "",
-        admin_id: undefined
       });
       setImage("");
       setPreview(null);
@@ -419,7 +415,7 @@ export default function AddEventButtonComponent({ admintype }: AddEventProps) {
                             field.onChange(Number(value));
                             form.setValue('school_id', undefined);
                             form.setValue('baranggay_id', undefined);
-                          }} 
+                          }}
                           value={field.value?.toString()}
                         >
                           <FormControl>

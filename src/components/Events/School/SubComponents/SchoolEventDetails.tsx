@@ -13,11 +13,12 @@ import { Calendar, Clock, MapPin, Edit2Icon } from 'lucide-react'
 import { format, isBefore, isAfter, isWithinInterval } from 'date-fns'
 
 interface SchoolEventDetailsDialogProps {
+    admintype: number
     event: Event
     onClose: () => void
 }
 
-export function SchoolEventDetailsDialog({ event, onClose }: SchoolEventDetailsDialogProps) {
+export function SchoolEventDetailsDialog({ admintype, event, onClose }: SchoolEventDetailsDialogProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [showAttendees, setShowAttendees] = useState(false)
@@ -162,22 +163,26 @@ export function SchoolEventDetailsDialog({ event, onClose }: SchoolEventDetailsD
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-4">
-                            <Button 
-                                className="bg-yellow-400 hover:bg-yellow-500 text-black"
-                                onClick={() => setShowAttendees(true)}
-                            >
-                                Check Attendees
-                            </Button>
-                            <Button 
-                                variant="outline" 
-                                className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
-                                onClick={() => setIsEditDialogOpen(true)}
-                            >
-                                <Edit2Icon className="w-4 h-4 mr-2" />
-                                Edit Event
-                            </Button>
-                        </div>
+                        {admintype !== 2?
+                            <div className="flex gap-4 pt-4">
+                                <Button 
+                                    className="bg-yellow-400 hover:bg-yellow-500 text-black"
+                                    onClick={() => setShowAttendees(true)}
+                                >
+                                    Check Attendees
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
+                                    onClick={() => setIsEditDialogOpen(true)}
+                                >
+                                    <Edit2Icon className="w-4 h-4 mr-2" />
+                                    Edit Event
+                                </Button>
+                            </div>
+                            :
+                            <></>
+                        }
                     </div>
                 </div>
             </DialogContent>

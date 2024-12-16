@@ -15,13 +15,14 @@ import { useSidebar } from '@/components/ui/sidebar'
 
 interface CommunityEventSectionProps {
     barangayname: string
+    admintype: number
   title: string
   events: Event[]
   isLoading: boolean
   onEventSelect: (event: Event) => void
 }
 
-export function CommunityEventSection({ barangayname, title, events, isLoading, onEventSelect }: CommunityEventSectionProps) {
+export function CommunityEventSection({ barangayname, admintype, title, events, isLoading, onEventSelect }: CommunityEventSectionProps) {
     const router = useRouter();
     const { theme } = useTheme();
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
@@ -144,10 +145,14 @@ export function CommunityEventSection({ barangayname, title, events, isLoading, 
                                                 <ListCollapse />
                                                 Details
                                             </Button>
-                                            <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
-                                                <Edit2Icon className="w-3 h-3" />
-                                                Edit
-                                            </Button>
+                                            {admintype !== 2?
+                                                <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
+                                                    <Edit2Icon className="w-3 h-3" />
+                                                    Edit
+                                                </Button>
+                                                :
+                                                <></>
+                                            }
                                         </div>
                                     </CardContent>
                                 </Card>
