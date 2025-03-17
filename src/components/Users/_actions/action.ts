@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 import API_URL from "@/constants/constants";
 import { Baranggay, School } from "@/components/types";
 
-const token = cookies().get("session")?.value;
-
 export const getScholarEvents = async (scholarId: number) => {
+
+    const token = cookies().get("session")?.value
     try {
       const response = await fetch(`${API_URL}/api/events/scholars/${scholarId}`, {
         cache: 'no-store',
@@ -70,6 +70,8 @@ export const getScholarEvents = async (scholarId: number) => {
   }
   
   export async function getImage(imageUuid: string) {
+
+    const token = cookies().get("session")?.value
       try {
           const response = await fetch(`${API_URL}/api/events/getimage`, {
               cache: 'no-store',
@@ -101,6 +103,8 @@ export const getScholarEvents = async (scholarId: number) => {
   }
 
   export const updateScholarInfo = async (scholarId: number, scholarData: any) => {
+
+    const token = cookies().get("session")?.value
     try {
         const response = await fetch(`${API_URL}/api/user/admin/scholar/${scholarId}/update`, {
             method: "PUT",

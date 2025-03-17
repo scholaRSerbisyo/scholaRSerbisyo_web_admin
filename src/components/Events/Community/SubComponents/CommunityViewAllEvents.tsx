@@ -166,15 +166,22 @@ export default function CommunityScholarViewAllEvents({ admintype, events }: Com
                                     </p>
                                 </div>
                                 <div className={`flex ${admintype !== 2?'justify-between':'justify-center'}`}>
-                                    <Button size="sm" variant="secondary" className={`text-xs bg-[#191851] text-white hover:bg-blue-800 ${admintype !== 2?'':'w-full'}`} onClick={() => handleDetailsClick(event)}>
+                                    <Button size="sm" variant="secondary" className={`text-xs bg-[#191851] text-white hover:bg-blue-800 ${admintype !== 2?'':'w-full'} ${title === 'Ongoing Events'?'w-full':title === 'Upcoming Events'?'':'w-full'}`} onClick={() => handleDetailsClick(event)}>
                                         <ListCollapse />
                                         Details
                                     </Button>
                                     {admintype !== 2?
-                                        <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
-                                            <Edit2Icon className="w-3 h-3" />
-                                            Edit
-                                        </Button>
+                                        <>
+                                            {
+                                                title === 'Ongoing Events'?
+                                                <></>:title === 'Upcoming Events'?
+                                                <Button size="sm" variant="secondary" className="text-xs bg-ys text-white hover:bg-yellow-300" onClick={() => handleEditClick(event)}>
+                                                    <Edit2Icon className="w-3 h-3" />
+                                                    Edit
+                                                </Button>:
+                                                <></>
+                                            }
+                                        </>
                                         :
                                         <></>
                                     }

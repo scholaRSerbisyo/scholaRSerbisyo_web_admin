@@ -78,25 +78,28 @@ export function SchoolEditEventDialog({ event, onClose, onSave, isLoading }: Sch
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const updatedEvent: Event = {
-        ...event,
-        event_name: formData.event_name,
-        description: formData.description,
-        date: formData.date,
-        time_from: formData.time_from,
-        time_to: formData.time_to,
-        location: formData.location,
-        image: formData.image
-      }
-      await onSave(updatedEvent)
-      router.refresh()
+    const confirmCreate = window.confirm("Are you sure you want to create the FAQ?");
+    if (confirmCreate) {
+      try {
+        const updatedEvent: Event = {
+          ...event,
+          event_name: formData.event_name,
+          description: formData.description,
+          date: formData.date,
+          time_from: formData.time_from,
+          time_to: formData.time_to,
+          location: formData.location,
+          image: formData.image
+        }
+        await onSave(updatedEvent)
+        router.refresh()
 
-      window.location.reload();
-      onClose()
-    } catch (error) {
-      console.error('Error updating event:', error)
-      setError('Failed to update event. Please try again.')
+        window.location.reload();
+        onClose()
+      } catch (error) {
+        console.error('Error updating event:', error)
+        setError('Failed to update event. Please try again.')
+      }
     }
   }
 

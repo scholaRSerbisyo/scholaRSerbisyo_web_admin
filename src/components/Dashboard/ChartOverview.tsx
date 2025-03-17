@@ -3,7 +3,27 @@
 import * as React from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartLegend, ChartTooltip } from "@/components/ui/chart"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+interface Scholar {
+  id: number
+  firstname: string
+  lastname: string
+  mobilenumber: string
+  age: string
+  yearLevel: string
+  scholarType: string
+  school: {
+    id: number
+    name: string
+  }
+  barangay: {
+    id: number
+    name: string
+  }
+  returnServiceCount: number
+  created_at: string
+}
 
 interface DataPoint {
   name: string
@@ -11,21 +31,6 @@ interface DataPoint {
   School: number
   Community: number
 }
-
-const data: DataPoint[] = [
-  { name: "Jan", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Feb", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Mar", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Apr", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "May", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Jun", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Jul", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Aug", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Sep", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Oct", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Nov", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Dec", CSO: Math.floor(Math.random() * 5000) + 1000, School: Math.floor(Math.random() * 5000) + 1000, Community: Math.floor(Math.random() * 5000) + 1000 },
-]
 
 interface TooltipProps {
   active?: boolean
@@ -47,9 +52,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
         {payload.map((item, index) => (
           <div key={index} className="flex items-center justify-between gap-2">
             <span className="text-sm text-muted-foreground">{item.name}:</span>
-            <span className="text-sm font-medium">
-              {item.value.toLocaleString()} people
-            </span>
+            <span className="text-sm font-medium">{item.value.toLocaleString()} scholars</span>
           </div>
         ))}
       </CardContent>
@@ -58,78 +61,99 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
 }
 
 interface ChartProps {
-  admintype: number
+  scholars: Scholar[]
 }
 
-export function ChartOverviewComponent({admintype}: ChartProps) {
+export function ChartOverviewComponent({ scholars }: ChartProps) {
   const [visibility, setVisibility] = React.useState({
     CSO: true,
     School: true,
     Community: true,
   })
 
+  // Process scholars data for current year only
+  const data = React.useMemo(() => {
+    const currentYear = new Date().getFullYear()
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    const monthlyData = months.map((month) => ({
+      name: month,
+      CSO: 0,
+      School: 0,
+      Community: 0,
+    }))
+
+    // Filter scholars for current year and process data
+    scholars
+      .filter((scholar) => {
+        const scholarDate = new Date(scholar.created_at)
+        return scholarDate.getFullYear() === currentYear
+      })
+      .forEach((scholar) => {
+        const date = new Date(scholar.created_at)
+        const monthIndex = date.getMonth()
+        const scholarType = scholar.scholarType
+
+        if (scholarType === "CSO Scholar") {
+          monthlyData[monthIndex].CSO++
+        } else if (scholarType === "School Based") {
+          monthlyData[monthIndex].School++
+        } else if (scholarType === "Community Based") {
+          monthlyData[monthIndex].Community++
+        }
+      })
+
+    return monthlyData
+  }, [scholars])
+
+  const currentYear = new Date().getFullYear()
+
   return (
-    <ChartContainer
-      className="h-[350px] w-full"
-      config={{
-        CSO: {
-          label: "CSO",
-          color: "hsl(var(--chart-1))",
-        },
-        School: {
-          label: "School",
-          color: "hsl(var(--chart-2))",
-        },
-        Community: {
-          label: "Community",
-          color: "hsl(var(--chart-3))",
-        },
-      }}
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
-          <XAxis
-            dataKey="name"
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="hsl(var(--muted-foreground))"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `${value.toLocaleString()}`}
-          />
-          <ChartTooltip 
-            content={<CustomTooltip />}
-          />
-          <ChartLegend />
-          {visibility.CSO && (
-            <Bar
-              dataKey="CSO"
-              fill="var(--color-CSO)"
-              radius={[0, 0, 0, 0]}
-            />
-          )}
-          {visibility.School && (
-            <Bar
-              dataKey="School"
-              fill="var(--color-School)"
-              radius={[0, 0, 0, 0]}
-            />
-          )}
-          {visibility.Community && (
-            <Bar
-              dataKey="Community"
-              fill="var(--color-Community)"
-              radius={[0, 0, 0, 0]}
-            />
-          )}
-        </BarChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <Card className="border-none">
+      <CardContent>
+        <ChartContainer
+          className="h-[350px] w-full"
+          config={{
+            CSO: {
+              label: "CSO Scholar",
+              color: "hsl(var(--chart-1))",
+            },
+            School: {
+              label: "School Based",
+              color: "hsl(var(--chart-2))",
+            },
+            Community: {
+              label: "Community Based",
+              color: "hsl(var(--chart-3))",
+            },
+          }}
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <XAxis
+                dataKey="name"
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `${value.toLocaleString()}`}
+              />
+              <ChartTooltip content={<CustomTooltip />} />
+              <ChartLegend />
+              {visibility.CSO && <Bar dataKey="CSO" fill="var(--color-CSO)" radius={[4, 4, 0, 0]} />}
+              {visibility.School && <Bar dataKey="School" fill="var(--color-School)" radius={[4, 4, 0, 0]} />}
+              {visibility.Community && <Bar dataKey="Community" fill="var(--color-Community)" radius={[4, 4, 0, 0]} />}
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   )
 }
 

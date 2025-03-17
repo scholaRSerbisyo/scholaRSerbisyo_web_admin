@@ -268,3 +268,63 @@ export async function updateEvent(event: Event): Promise<Event> {
       throw error
     }
   }
+
+  export async function fetchEventValidations() {
+    const token = cookies().get('session')?.value
+    try {
+      const response = await fetch(`${API_URL}/api/events/event-validations`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      })
+      return await response.json()
+    } catch (error) {
+      console.error('Error fetching Event Validation', error)
+      throw error
+    }
+  }
+
+  export async function acceptEvent(id: number) {
+    const token = cookies().get('session')?.value
+    try {
+      const response = await fetch(`${API_URL}/api/events/validation/${id}/accept`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      })
+      
+      if (!response.ok) throw new Error('Failed to accept event')
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error Accepting Event', error)
+      throw error
+    }
+  }
+
+  export async function handleDeclineEvent(id: number) {
+    const token = cookies().get('session')?.value
+    try {
+      const response = await fetch(`${API_URL}/api/events/validation/${id}/decline`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+      })
+      
+      if (!response.ok) throw new Error('Failed to decline event')
+      
+      return await response.json()
+    } catch (error) {
+      console.error('Error Declining Event', error)
+      throw error
+    }
+  }

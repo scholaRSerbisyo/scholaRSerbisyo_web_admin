@@ -41,7 +41,7 @@ export function DashboardFrame({ admintype, scholars }: DashboardProps) {
         <div className="flex flex-col justify-center gap-5 w-full lg:w-2/3 h-full">
           {isLoading ? <AnalyticsSkeleton /> : <AnalyticsComponent />}
           <div className="rounded-sm border py-5 pr-5">
-            {isLoading ? <ChartSkeleton /> : <ChartOverviewComponent admintype={admintype} />}
+            {isLoading ? <ChartSkeleton /> : <ChartOverviewComponent scholars={scholars} />}
           </div>
           <div className="p-2 rounded-sm border">
             {isLoading ? (

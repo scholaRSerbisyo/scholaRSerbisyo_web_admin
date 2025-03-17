@@ -113,7 +113,7 @@ export function FAQDialog({ isOpen, onClose }: FAQDialogProps) {
               />
             </div>
             <Button 
-              className="bg-[#191851] hover:bg-[#191851]/90"
+              className="bg-[#191851] text-white hover:bg-[#191851]/90"
               onClick={() => setIsCreateDialogOpen(true)}
             >
               <Plus className="mr-2 h-4 w-4" />

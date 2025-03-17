@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -13,11 +13,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Settings2Icon, Search, Download } from 'lucide-react'
-import { format } from 'date-fns'
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Settings2Icon, Search, Download } from "lucide-react"
+import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,18 +28,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/hooks/use-toast"
-import { fetchCompletedSubmissions, acceptSubmission, declineSubmission } from '@/components/Events/_actions/events'
+import { fetchCompletedSubmissions, acceptSubmission, declineSubmission } from "@/components/Events/_actions/events"
 import { ProofOverlay } from "../../proof-overlay"
-import { exportAttendeesData, ScholarAttendees } from '@/lib/utils/export'
+import { exportAttendeesData, type ScholarAttendees } from "@/lib/utils/export"
+import { useState } from "react"
 
 interface Submission {
   id: number
@@ -55,6 +49,7 @@ interface Submission {
       name: string | null
     }
   }
+  status: string,
   time_in: string
   time_out: string
   time_in_location: string
@@ -63,9 +58,9 @@ interface Submission {
   time_out_image_uuid: string
   created_at: string
   is_accepted: boolean
-  onViewProof?: (submission: Submission) => void;
-  onAccept?: (submissionId: number) => void;
-  onDecline?: (submissionId: number) => void;
+  onViewProof?: (submission: Submission) => void
+  onAccept?: (submissionId: number) => void
+  onDecline?: (submissionId: number) => void
 }
 
 interface CheckAttendeesDialogProps {
@@ -78,10 +73,7 @@ const columns: ColumnDef<Submission>[] = [
   {
     accessorKey: "scholar.lastname",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Last Name
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -107,7 +99,7 @@ const columns: ColumnDef<Submission>[] = [
   {
     accessorKey: "created_at",
     header: "Date",
-    cell: ({ row }) => format(new Date(row.getValue("created_at")), 'M/d/yyyy'),
+    cell: ({ row }) => format(new Date(row.getValue("created_at")), "M/d/yyyy"),
   },
   {
     id: "proof",
@@ -129,23 +121,21 @@ const columns: ColumnDef<Submission>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-transparent hover:text-black" disabled={submission.is_accepted}>
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0 hover:bg-transparent hover:text-black"
+              disabled={submission.is_accepted}
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem 
-              onClick={() => submission.onAccept?.(submission.id)}
-              disabled={submission.is_accepted}
-            >
+            <DropdownMenuItem onClick={() => submission.onAccept?.(submission.id)} disabled={submission.is_accepted}>
               Accept
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => submission.onDecline?.(submission.id)}
-              disabled={submission.is_accepted}
-            >
+            <DropdownMenuItem onClick={() => submission.onDecline?.(submission.id)} disabled={submission.is_accepted}>
               Decline
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -164,19 +154,23 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
   const [selectedSubmission, setSelectedSubmission] = React.useState<Submission | null>(null)
   const [isProofOverlayOpen, setIsProofOverlayOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [pendingAction, setPendingAction] = useState<{ type: "accept" | "decline"; submissionId: number } | null>(null)
 
   const fetchSubmissions = React.useCallback(async () => {
     setIsLoading(true)
     try {
       const data = await fetchCompletedSubmissions(eventId, 1)
-      setSubmissions(data.submissions.map((submission: Omit<Submission, 'onViewProof' | 'onAccept' | 'onDecline'>) => ({
-        ...submission,
-        onViewProof: () => handleViewProof(submission),
-        onAccept: () => handleAccept(submission.id),
-        onDecline: () => handleDecline(submission.id),
-      })))
+      setSubmissions(
+        data.submissions.map((submission: Omit<Submission, "onViewProof" | "onAccept" | "onDecline">) => ({
+          ...submission,
+          onViewProof: () => handleViewProof(submission),
+          onAccept: () => handleAccept(submission.id),
+          onDecline: () => handleDecline(submission.id),
+        })),
+      )
     } catch (error) {
-      console.error('Error fetching submissions:', error)
+      console.error("Error fetching submissions:", error)
       toast({
         title: "Error",
         description: "Failed to fetch submissions. Please try again.",
@@ -197,44 +191,50 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
   }
 
   const handleAccept = async (submissionId: number) => {
-    try {
-      await acceptSubmission(submissionId)
-      setSubmissions(prevSubmissions =>
-        prevSubmissions.map(sub =>
-          sub.id === submissionId ? { ...sub, is_accepted: true } : sub
-        )
-      )
-      toast({
-        title: "Success",
-        description: "Submission accepted successfully.",
-      })
-    } catch (error) {
-      console.error('Error accepting submission:', error)
-      toast({
-        title: "Error",
-        description: "Failed to accept submission. Please try again.",
-        variant: "destructive",
-      })
-    }
+    setPendingAction({ type: "accept", submissionId })
+    setShowConfirmDialog(true)
   }
 
   const handleDecline = async (submissionId: number) => {
+    setPendingAction({ type: "decline", submissionId })
+    setShowConfirmDialog(true)
+  }
+
+  const handleConfirmedAction = async () => {
+    if (!pendingAction) return
+
     try {
-      await declineSubmission(submissionId)
-      setSubmissions(prevSubmissions =>
-        prevSubmissions.filter(sub => sub.id !== submissionId)
-      )
-      toast({
-        title: "Success",
-        description: "Submission declined successfully.",
-      })
+      if (pendingAction.type === "accept") {
+        await acceptSubmission(pendingAction.submissionId)
+        setSubmissions((prevSubmissions) =>
+          prevSubmissions.map((sub) => (sub.id === pendingAction.submissionId ? { ...sub, is_accepted: true } : sub)),
+        )
+        toast({
+          title: "Success",
+          description: "Submission accepted successfully.",
+        })
+      } else {
+        await declineSubmission(pendingAction.submissionId)
+        setSubmissions((prevSubmissions) =>
+          prevSubmissions.map((sub) =>
+            sub.id === pendingAction.submissionId ? { ...sub, is_accepted: false, status: "declined" } : sub,
+          ),
+        )
+        toast({
+          title: "Success",
+          description: "Submission declined successfully.",
+        })
+      }
     } catch (error) {
-      console.error('Error declining submission:', error)
+      console.error(`Error ${pendingAction.type}ing submission:`, error)
       toast({
         title: "Error",
-        description: "Failed to decline submission. Please try again.",
+        description: `Failed to ${pendingAction.type} submission. Please try again.`,
         variant: "destructive",
       })
+    } finally {
+      setShowConfirmDialog(false)
+      setPendingAction(null)
     }
   }
 
@@ -255,8 +255,8 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
       globalFilter: searchQuery,
     },
     globalFilterFn: (row, columnId, filterValue) => {
-      const value = row.getValue(columnId) as string;
-      return value.toLowerCase().includes(filterValue.toLowerCase());
+      const value = row.getValue(columnId) as string
+      return value.toLowerCase().includes(filterValue.toLowerCase())
     },
     initialState: {
       pagination: {
@@ -265,38 +265,41 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
     },
   })
 
-  const handleExport = React.useCallback(async (fileType: 'csv' | 'xlsx' | 'pdf') => {
-    try {
-      const exportData: ScholarAttendees[] = submissions.map(submission => ({
-        id: submission.scholar.id,
-        firstname: submission.scholar.firstname,
-        lastname: submission.scholar.lastname,
-        mobilenumber: '', // Add this if available in your data
-        age: '', // Add this if available in your data
-        yearLevel: submission.scholar.yearLevel,
-        school: {
-          name: submission.scholar.school.name || '' // Use empty string as fallback
-        },
-        barangay: {
-          name: submission.scholar.barangay.name || '' // Use empty string as fallback
-        },
-        date: submission.created_at,
-      }))
+  const handleExport = React.useCallback(
+    async (fileType: "csv" | "xlsx" | "pdf") => {
+      try {
+        const exportData: ScholarAttendees[] = submissions.map((submission) => ({
+          id: submission.scholar.id,
+          firstname: submission.scholar.firstname,
+          lastname: submission.scholar.lastname,
+          mobilenumber: "", // Add this if available in your data
+          age: "", // Add this if available in your data
+          yearLevel: submission.scholar.yearLevel,
+          school: {
+            name: submission.scholar.school.name || "", // Use empty string as fallback
+          },
+          barangay: {
+            name: submission.scholar.barangay.name || "", // Use empty string as fallback
+          },
+          date: submission.created_at,
+        }))
 
-      await exportAttendeesData(exportData, eventName, submissions.length, fileType)
-      toast({
-        title: "Export Successful",
-        description: `Data exported as ${fileType.toUpperCase()} successfully.`,
-      })
-    } catch (error) {
-      console.error("Export failed:", error)
-      toast({
-        title: "Export Failed",
-        description: "There was an error exporting the data. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }, [submissions, eventName])
+        await exportAttendeesData(exportData, eventName, submissions.length, fileType)
+        toast({
+          title: "Export Successful",
+          description: `Data exported as ${fileType.toUpperCase()} successfully.`,
+        })
+      } catch (error) {
+        console.error("Export failed:", error)
+        toast({
+          title: "Export Failed",
+          description: "There was an error exporting the data. Please try again.",
+          variant: "destructive",
+        })
+      }
+    },
+    [submissions, eventName],
+  )
 
   return (
     <>
@@ -318,13 +321,13 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-white">
-                    <DropdownMenuItem onClick={() => handleExport('csv')} className="text-black">
+                    <DropdownMenuItem onClick={() => handleExport("csv")} className="text-black">
                       Export as CSV
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('xlsx')} className="text-black">
+                    <DropdownMenuItem onClick={() => handleExport("xlsx")} className="text-black">
                       Export as Excel
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('pdf')} className="text-black">
+                    <DropdownMenuItem onClick={() => handleExport("pdf")} className="text-black">
                       Export as PDF
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -335,9 +338,9 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
                     placeholder="Filter last name..."
                     value={searchQuery}
                     onChange={(event) => {
-                      const value = event.target.value;
-                      setSearchQuery(value);
-                      table.getColumn("scholar.lastname")?.setFilterValue(value);
+                      const value = event.target.value
+                      setSearchQuery(value)
+                      table.getColumn("scholar.lastname")?.setFilterValue(value)
                     }}
                     className="pl-8 bg-white text-black w-[250px]"
                   />
@@ -374,9 +377,9 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
                 <Table>
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id} className="bg-gray-100 hover:bg-gray-100">
+                      <TableRow key={headerGroup.id} className="bg-gray-300 hover:bg-gray-100">
                         {headerGroup.headers.map((header) => (
-                          <TableHead key={header.id} className="text-black font-semibold">
+                          <TableHead key={header.id} className="text-black">
                             {header.isPlaceholder
                               ? null
                               : flexRender(header.column.columnDef.header, header.getContext())}
@@ -387,16 +390,19 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow>
+                      <TableRow className="bg-red-300">
                         <TableCell colSpan={columns.length} className="h-24 text-center text-black">
                           Loading attendees...
                         </TableCell>
                       </TableRow>
                     ) : table.getRowModel().rows?.length ? (
                       table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id} className="hover:bg-gray-50">
+                        <TableRow
+                          key={row.id}
+                          className={`hover:bg-gray-50`}
+                        >
                           {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id} className="text-black">
+                            <TableCell key={cell.id} className={`text-black ${row.original.is_accepted ? row.original.status === 'declined' ? "bg-red-500" : "bg-green-500" : ""}`}>
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
                           ))}
@@ -439,8 +445,7 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
                   </select>
                 </div>
                 <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                  Page {table.getState().pagination.pageIndex + 1} of{" "}
-                  {table.getPageCount()}
+                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -494,6 +499,37 @@ export function CheckAttendeesDialog({ eventId, eventName, onClose }: CheckAtten
         }}
         submission={selectedSubmission}
       />
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Action</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to {pendingAction?.type} this submission? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirmDialog(false)
+                setPendingAction(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmedAction}
+              className={
+                pendingAction?.type === "accept"
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-red-600 text-white hover:bg-red-700"
+              }
+            >
+              Confirm
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

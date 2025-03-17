@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import API_URL from "@/constants/constants"
 
 export interface NotificationData {
-    event_id: number;
+    event_id: number | undefined;
     event_name: string;
     event_type_name: string; // Add this line
     description: string;

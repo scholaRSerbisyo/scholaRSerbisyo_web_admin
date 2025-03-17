@@ -48,10 +48,7 @@ export interface Scholar {
   mobilenumber: string;
   age: string;
   yearLevel: string;
-  scholarType: {
-    id: number;
-    name: string;
-  };
+  scholarType: string;
   school: {
     id: number;
     name: string;
@@ -61,6 +58,7 @@ export interface Scholar {
     name: string;
   };
   returnServiceCount: number;
+  created_at: string
 }
 
 export interface ScholarProps {
@@ -241,7 +239,7 @@ function ScholarTable({ data }: { data: Scholar[] }) {
     },
     initialState: {
       pagination: {
-        pageSize: 6,
+        pageSize: 5,
       },
     },
   })

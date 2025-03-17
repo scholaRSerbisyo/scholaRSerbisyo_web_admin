@@ -78,23 +78,26 @@ export function CommunityEditEventDialog({ event, onClose, onSave, isLoading }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const updatedEvent: Event = {
-        ...event,
-        event_name: formData.event_name,
-        description: formData.description,
-        date: formData.date,
-        time_from: formData.time_from,
-        time_to: formData.time_to,
-        location: formData.location,
-        image: formData.image
+    const confirmCreate = window.confirm("Are you sure you want to create the FAQ?");
+    if (confirmCreate) {
+      try {
+        const updatedEvent: Event = {
+          ...event,
+          event_name: formData.event_name,
+          description: formData.description,
+          date: formData.date,
+          time_from: formData.time_from,
+          time_to: formData.time_to,
+          location: formData.location,
+          image: formData.image
+        }
+        await onSave(updatedEvent)
+        router.refresh()
+        onClose()
+      } catch (error) {
+        console.error('Error updating event:', error)
+        setError('Failed to update event. Please try again.')
       }
-      await onSave(updatedEvent)
-      router.refresh()
-      onClose()
-    } catch (error) {
-      console.error('Error updating event:', error)
-      setError('Failed to update event. Please try again.')
     }
   }
 

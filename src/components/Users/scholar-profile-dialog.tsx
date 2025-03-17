@@ -13,6 +13,7 @@ import { Scholar } from './UserFrame'
 import { updateScholarInfo, getSchools, getBaranggays } from '@/components/Users/_actions/action'
 import { School, Baranggay } from '@/components/types'
 import { z } from 'zod'
+import { useTheme } from 'next-themes'
 
 const scholarSchema = z.object({
   id: z.number(),
@@ -40,6 +41,7 @@ interface ScholarProfileDialogProps {
 }
 
 export function ScholarProfileDialog({ scholar, open, onClose }: ScholarProfileDialogProps) {
+  const { theme } = useTheme();
   const [isEditing, setIsEditing] = useState(false)
   const [editedScholar, setEditedScholar] = useState<ScholarSchema | null>(scholar)
   const [isLoading, setIsLoading] = useState(false)
@@ -196,15 +198,15 @@ export function ScholarProfileDialog({ scholar, open, onClose }: ScholarProfileD
 
               {/* Scholar Details */}
               <div className="space-y-6 pl-7">
-                <div className="flex items-center gap-3 text-gray-600">
+                <div className={`flex items-center gap-3 text-gray-600 ${theme === 'light' ? '' : 'text-white'}`}>
                   <GraduationCap className="h-5 w-5 text-ys" />
                   <span>Studied at <span className="font-medium">{scholar.school.name}</span></span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-600">
+                <div className={`flex items-center gap-3 text-gray-600 ${theme === 'light' ? '' : 'text-white'}`}>
                   <MapPin className="h-5 w-5 text-ys" />
                   <span>Live in <span className="font-medium">{scholar.barangay.name}</span></span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-600">
+                <div className={`flex items-center gap-3 text-gray-600 ${theme === 'light' ? '' : 'text-white'}`}>
                   <Phone className="h-5 w-5 text-ys" />
                   <span className="font-medium">{scholar.mobilenumber}</span>
                 </div>
@@ -213,7 +215,7 @@ export function ScholarProfileDialog({ scholar, open, onClose }: ScholarProfileD
               {/* Edit Button */}
               <Button 
                 onClick={handleEdit} 
-                className="w-full mt-8 bg-[#191851] hover:bg-[#191851]/90"
+                className={`w-full mt-8 ${theme === 'light' ? '' : 'text-white'} bg-[#191851] hover:bg-[#191851]/90`}
               >
                 Edit Profile
               </Button>
@@ -363,7 +365,7 @@ export function ScholarProfileDialog({ scholar, open, onClose }: ScholarProfileD
               <Button 
                 onClick={handleSave} 
                 disabled={isLoading}
-                className="w-full bg-[#191851] hover:bg-[#191851]/90"
+                className="w-full text-white bg-[#191851] hover:bg-[#191851]/90"
               >
                 {isLoading ? "Saving..." : "Save Changes"}
               </Button>

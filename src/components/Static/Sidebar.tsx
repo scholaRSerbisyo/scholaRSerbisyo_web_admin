@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import Image from "next/image";
-import { BadgeCheck, Bell, Calendar, ChevronRight, ChevronDown, ChevronsUpDown, CreditCard, LayoutDashboardIcon, GalleryVerticalEnd, LogOut, Settings2, Sparkles, User, UserRoundCheck, Settings } from 'lucide-react';
+import { BadgeCheck, Bell, Calendar, ChevronRight, ChevronDown, ChevronsUpDown, CreditCard, LayoutDashboardIcon, GalleryVerticalEnd, LogOut, Settings2, Sparkles, User, UserRoundCheck, Settings, Stamp } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -42,6 +42,7 @@ import { signOut } from "@/auth/auth";
 import { Button } from "../ui/button";
 import { FAQDialog } from "../FAQs/FAQDialog";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { useTheme } from "next-themes";
 
 interface NavSubItem {
   title: string;
@@ -80,6 +81,7 @@ export default function SidebarComponent({
 }: SidebarComponentProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme } = useTheme();
   const [isFAQOpen, setIsFAQOpen] = useState(false);
 
   const getNavItems = (): NavItem[] => {
@@ -97,6 +99,12 @@ export default function SidebarComponent({
       path: "/rsstatus",
     };
 
+    const eventValidationItem: NavItem = {
+      title: "Event Validation",
+      icon: Stamp,
+      path: "/events/validation",
+    };
+
     // Admin type 1 gets all items
     if (admintype === 1) {
       return [
@@ -111,6 +119,7 @@ export default function SidebarComponent({
           ],
         },
         returnServiceItem,
+        eventValidationItem,
       ];
     }
 
@@ -128,6 +137,7 @@ export default function SidebarComponent({
           ],
         },
         returnServiceItem,
+        eventValidationItem,
       ];
     }
 
@@ -161,7 +171,7 @@ export default function SidebarComponent({
       ];
     }
 
-    return [...baseItems, returnServiceItem];
+    return [...baseItems, returnServiceItem, eventValidationItem];
   };
 
   const navMain = getNavItems();
@@ -320,10 +330,10 @@ export default function SidebarComponent({
                     <>
                       <DropdownMenuGroup>
                         <Button
-                          className="flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out"
+                          className={`flex items-start justify-start w-full hover:bg-muted rounded-sm bg-transparent text-start text-black border-none p-2 hover:ease-in-out ${theme === 'light' ? 'text-black' : 'text-white'}`}
                           onClick={() => setIsFAQOpen(true)}
                         >
-                          <QuestionMarkCircledIcon className="h-4 w-4" />
+                          <QuestionMarkCircledIcon className={`h-4 w-4`}/>
                           FAQs
                         </Button>
                       </DropdownMenuGroup>

@@ -48,25 +48,28 @@ export function CreateFAQDialog({ isOpen, onClose, onSubmit }: CreateFAQDialogPr
   })
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const { message, status, faq } = await addFAQ(values)
-      if (status === 201) {
-        onSubmit(faq.question, faq.answer)
-        form.reset()
-        onClose()
+    const confirmCreate = window.confirm("Are you sure you want to create the FAQ?");
+    if (confirmCreate) {
+      try {
+        const { message, status, faq } = await addFAQ(values)
+        if (status === 201) {
+          onSubmit(faq.question, faq.answer)
+          form.reset()
+          onClose()
+          toast({
+            title: "Success",
+            description: message,
+          })
+        } else {
+          throw new Error(message)
+        }
+      } catch (error) {
         toast({
-          title: "Success",
-          description: message,
+          title: "Error",
+          description: (error as Error).message,
+          variant: "destructive",
         })
-      } else {
-        throw new Error(message)
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: (error as Error).message,
-        variant: "destructive",
-      })
     }
   }
 

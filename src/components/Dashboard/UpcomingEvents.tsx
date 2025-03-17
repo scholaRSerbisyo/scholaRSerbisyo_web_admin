@@ -84,10 +84,7 @@ export function UpcomingEventsComponents({ className, ...props }: CardProps) {
           {upcomingEvents.length == 0?<p className='text-center'>No Upcoming Events...</p>:<></>}
         </div>
       </CardContent>
-      <CardFooter className='mt-5'>
-        <Link href={''} className="rounded-md py-2 text-sm text-center w-full bg-ys text-black hover:bg-yellow-300">
-          View All
-        </Link>
+      <CardFooter>
       </CardFooter>
     </Card>
   )

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,7 @@ export function CommunityEventDetailsDialog({ admintype, event, onClose }: Commu
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
     const [isUpdateLoading, setIsUpdateLoading] = useState(false)
     const [localEvent, setLocalEvent] = useState<Event>(event)
+    const [eventStatus, setEventStatus] = useState('');
 
     const determineEventStatus = (eventDate: string, timeFrom: string, timeTo: string): string => {
         const now = new Date();
@@ -44,6 +45,12 @@ export function CommunityEventDetailsDialog({ admintype, event, onClose }: Commu
             return 'upcoming';
         }
     };
+
+    useEffect(() => {
+        const status = determineEventStatus(event.date, event.time_from, event.time_to);
+
+        setEventStatus(status);
+    }, [status]);
 
     const handleSaveUpdateEvent = async (updatedEvent: Event) => {
         setIsUpdateLoading(true);
@@ -165,19 +172,24 @@ export function CommunityEventDetailsDialog({ admintype, event, onClose }: Commu
                         {admintype !== 2?
                             <div className="flex gap-4 pt-4">
                                 <Button 
-                                    className="bg-yellow-400 hover:bg-yellow-500 text-black"
+                                    className={`bg-yellow-400 hover:bg-yellow-500 text-black ${eventStatus === 'ongoing'?'w-full':eventStatus === 'upcoming'?'':'w-full'}`}
                                     onClick={() => setShowAttendees(true)}
                                 >
                                     Check Attendees
                                 </Button>
-                                <Button 
-                                    variant="outline" 
-                                    className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
-                                    onClick={() => setIsEditDialogOpen(true)}
-                                >
-                                    <Edit2Icon className="w-4 h-4 mr-2" />
-                                    Edit Event
-                                </Button>
+                                {
+                                    eventStatus === 'ongoing'?
+                                    <></>:eventStatus === 'upcoming'?
+                                    <Button 
+                                        variant="outline" 
+                                        className={`border-gray-700 hover:bg-gray-800 ${theme === 'light' ? 'text-black' : ''}`}
+                                        onClick={() => setIsEditDialogOpen(true)}
+                                    >
+                                        <Edit2Icon className="w-4 h-4 mr-2" />
+                                        Edit Event
+                                    </Button>:
+                                    <></>
+                                }
                             </div>
                             :
                             <></>
