@@ -178,9 +178,6 @@ export default function LoginForm() {
                             </CardContent>
                             <CardFooter className="flex flex-col gap-4">
                                 <Button className="w-full bg-ys text-black hover:bg-yellow-200 font-semibold" type="submit">Sign in</Button>
-                                <Link href={"/forgot"} className="flex flex-row hover:underline hover:underline-offset-4 text-ys" >
-                                    <p>Forgot Password? </p>
-                                </Link>
                                 <Link href={'/'} className="font-semibold text-red-500 px-6 rounded-md hover:border-x-2 hover:border-red-500">Go Back</Link>
                             </CardFooter>
                             </Card>
